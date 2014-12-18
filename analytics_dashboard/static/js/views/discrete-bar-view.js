@@ -13,7 +13,7 @@ define(['d3', 'nvd3', 'underscore', 'utils/utils', 'views/bar-view'],
             /**
              * Add ellipses for long labels shown beneath the bar.
              */
-            formatXTick: function (d) {
+            truncateXTick: function (d) {
                 var barWidth = d3.select('.discreteBar').attr('width'),
                     // this is a rough estimate of how wide a character is
                     chartWidth = 5,

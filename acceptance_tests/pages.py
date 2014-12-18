@@ -6,7 +6,8 @@ from bok_choy.page_object import PageObject
 from bok_choy.promise import EmptyPromise
 
 from acceptance_tests import DASHBOARD_SERVER_URL, BASIC_AUTH_PASSWORD, BASIC_AUTH_USERNAME, LMS_HOSTNAME, \
-    TEST_COURSE_ID, TEST_PROBLEM_ID, TEST_PROBLEM_PART_ID
+    TEST_COURSE_ID, TEST_PROBLEM_ID, TEST_PROBLEM_PART_ID, TEST_ASSIGNMENT_ID, DEFAULT_ASSIGNMENT_TYPE, \
+    DEFAULT_ASSIGNMENT_ID
 
 
 class DashboardPage(PageObject):
@@ -141,19 +142,6 @@ class CourseEngagementContentPage(CoursePage):
                'Engagement Content' in self.browser.title
 
 
-class CoursePerformanceAnswerDistributionPage(CoursePage):
-    def __init__(self, browser, course_id=None, problem_id=None, part_id=None):
-        super(CoursePerformanceAnswerDistributionPage, self).__init__(browser, course_id)
-        self.problem_id = problem_id or TEST_PROBLEM_ID
-        self.part_id = part_id or TEST_PROBLEM_PART_ID
-        self.page_url += '/performance/graded_content/problems/{}/answer_distribution/{}/'.format(self.problem_id,
-                                                                                                  self.part_id)
-
-    def is_browser_on_page(self):
-        return super(CoursePerformanceAnswerDistributionPage, self).is_browser_on_page() and \
-               'Performance Answer Distribution' in self.browser.title
-
-
 class CourseIndexPage(DashboardPage):
     path = 'courses/'
 
@@ -162,6 +150,52 @@ class CourseIndexPage(DashboardPage):
 
     def is_browser_on_page(self):
         return self.browser.title.startswith('Courses')
+
+
+class CoursePerformanceGradedContentPage(CoursePage):
+    def __init__(self, browser, course_id=None):
+        super(CoursePerformanceGradedContentPage, self).__init__(browser, course_id)
+        self.page_url += '/performance/graded_content/'
+
+    def is_browser_on_page(self):
+        return super(CoursePerformanceGradedContentPage, self).is_browser_on_page() and \
+               'Graded Content' in self.browser.title
+
+
+class CoursePerformanceGradedContentByTypePage(CoursePage):
+    def __init__(self, browser, course_id=None, assignment_type=None):
+        super(CoursePerformanceGradedContentByTypePage, self).__init__(browser, course_id)
+        self.assignment_type = assignment_type or DEFAULT_ASSIGNMENT_TYPE
+        self.page_url = '{}/performance/graded_content/{}/'.format(self.page_url, self.assignment_type)
+
+    def is_browser_on_page(self):
+        return super(CoursePerformanceGradedContentByTypePage, self).is_browser_on_page() and \
+               self.assignment_type in self.browser.title
+
+
+class CoursePerformanceAssignmentPage(CoursePage):
+    def __init__(self, browser, course_id=None, assignment_id=None):
+        super(CoursePerformanceAssignmentPage, self).__init__(browser, course_id)
+        self.assignment_id = assignment_id or DEFAULT_ASSIGNMENT_ID
+        self.page_url = '{}/performance/graded_content/assignments/{}/'.format(self.page_url, self.assignment_id)
+
+    def is_browser_on_page(self):
+        return super(CoursePerformanceAssignmentPage, self).is_browser_on_page() and \
+               'Graded Content' in self.browser.title
+
+
+class CoursePerformanceAnswerDistributionPage(CoursePage):
+    def __init__(self, browser, course_id=None, assignment_id=None, problem_id=None, part_id=None):
+        super(CoursePerformanceAnswerDistributionPage, self).__init__(browser, course_id)
+        self.assignment_id = assignment_id or TEST_ASSIGNMENT_ID
+        self.problem_id = problem_id or TEST_PROBLEM_ID
+        self.part_id = part_id or TEST_PROBLEM_PART_ID
+        self.page_url += '/performance/graded_content/assignments/{}/problems/{}/parts/{}/answer_distribution/'.format(
+            self.assignment_id, self.problem_id, self.part_id)
+
+    def is_browser_on_page(self):
+        return super(CoursePerformanceAnswerDistributionPage, self).is_browser_on_page() and \
+               'Performance Answer Distribution' in self.browser.title
 
 
 class ErrorPage(DashboardPage):

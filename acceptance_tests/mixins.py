@@ -4,7 +4,8 @@ from unittest import skip
 
 from bok_choy.promise import EmptyPromise
 from analyticsclient.client import Client
-import edx_api_client
+from edx_api_client.auth import TokenAuth
+import slumber
 
 from acceptance_tests import API_SERVER_URL, API_AUTH_TOKEN, DASHBOARD_FEEDBACK_EMAIL, SUPPORT_URL, LMS_USERNAME, \
     LMS_PASSWORD, DASHBOARD_SERVER_URL, ENABLE_AUTO_AUTH, DOC_BASE_URL, COURSE_API_URL, COURSE_API_KEY, \
@@ -33,13 +34,13 @@ class CourseApiMixin(object):
         super(CourseApiMixin, self).setUp()
 
         if ENABLE_COURSE_API:
-            self.course_api_client = edx_api_client.Client(COURSE_API_URL, COURSE_API_KEY)
+            self.course_api_client = slumber.API(COURSE_API_URL, auth=TokenAuth(COURSE_API_KEY)).v0.courses
 
     def get_course_name_or_id(self, course_id):
         """ Returns the course name if the course API is enabled; otherwise, the course ID. """
         course_name = course_id
         if ENABLE_COURSE_API:
-            course_name = self.course_api_client.courses(course_id).get()['name']
+            course_name = self.course_api_client(course_id).get()['name']
 
         return course_name
 
@@ -78,12 +79,12 @@ class AssertMixin(object):
         # Ensure the table is loaded via AJAX
         self.fulfill_loading_promise(table_selector)
 
-        # make sure the map section is present
+        # make sure the containing element is present
         element = self.page.q(css=table_selector)
         self.assertTrue(element.present)
 
         # make sure the table is present
-        table_selector = table_selector + " table"
+        table_selector += " table"
         element = self.page.q(css=table_selector)
         self.assertTrue(element.present)
 
@@ -94,6 +95,15 @@ class AssertMixin(object):
         self.assertGreater(len(rows), 0)
 
         self.assertValidHref(download_selector)
+
+    def assertRowTextEquals(self, cols, expected_texts):
+        """
+        Asserts that the given columns contain the expected text.
+        :param cols: Array of Selenium HTML elements.
+        :param expected_texts: Array of strings.
+        """
+        actual = [col.text for col in cols]
+        self.assertListEqual(actual, expected_texts)
 
 
 class PageTestMixin(object):

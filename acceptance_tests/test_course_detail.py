@@ -1,5 +1,6 @@
 from bok_choy.web_app_test import WebAppTest
 
+from acceptance_tests import ENABLE_COURSE_API
 from acceptance_tests.mixins import CoursePageTestsMixin
 from acceptance_tests.pages import CourseHomePage
 
@@ -25,7 +26,7 @@ class CourseHomeTests(CoursePageTestsMixin, WebAppTest):
         """
         Generates a URL path from the specified view name.
         """
-        return '/' + view.replace('_', '/')\
+        return '/' + view.replace('_', '/') \
             .replace('courses:', 'courses/{}/'.format(self.page.course_id)) \
             .replace(':', '/') + '/'
 
@@ -76,6 +77,20 @@ class CourseHomeTests(CoursePageTestsMixin, WebAppTest):
                 ]
             }
         ]
+
+        if ENABLE_COURSE_API:
+            table_items.append({
+                'name': 'Performance',
+                'icon': 'fa-check-square-o',
+                'heading': 'How are students doing on course assignments?',
+                'items': [
+                    {
+                        'title': 'How are students doing on graded course assignments?',
+                        'view': 'courses:performance:graded_content',
+                        'breadcrumbs': ['Graded Content']
+                    }
+                ]
+            })
 
         table_outer = self.page.browser.find_element_by_css_selector('.course-home-table-outer')
 

@@ -12,7 +12,8 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                     excludeData: [],  // e.g. excludes data rows from chart (e.g. 'Unknown')
                     dataType: 'int',  // e.g. int, percent
                     xAxisMargin: 6,
-                    graphShiftSelector: null // Selector used for shifting chart position
+                    graphShiftSelector: null, // Selector used for shifting chart position
+                    truncateXTicks: false     // Determines if x axis ticks should be truncated
                 }
             ),
 
@@ -118,6 +119,13 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                 return d;
             },
 
+            /**
+            * Add ellipses for long labels shown beneath the bar.
+            */
+            truncateXTick: function (d) {   // jshint ignore:line
+                throw 'Not implemented';
+            },
+
             parseXData: function (d) {
                 var self = this;
                 return d[self.options.x.key];
@@ -210,7 +218,7 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                     }
                 }
 
-                self.chart.xAxis.tickFormat(self.formatXTick);
+                self.chart.xAxis.tickFormat(self.options.truncateXTicks ? self.truncateXTick: self.formatXTick);
 
                 self.chart.yAxis
                     .showMaxMin(false)

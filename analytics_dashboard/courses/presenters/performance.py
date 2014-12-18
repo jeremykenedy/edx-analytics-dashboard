@@ -1,11 +1,18 @@
 from collections import namedtuple
+import logging
 
+from django.core.cache import cache
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from analyticsclient.exceptions import NotFoundError
+from edx_api_client.auth import TokenAuth
+import slumber
 
 import courses.utils as utils
 from courses.presenters import BasePresenter
 
+
+logger = logging.getLogger(__name__)
 
 # Stores the answer distribution return from CoursePerformancePresenter
 AnswerDistributionEntry = namedtuple('AnswerDistributionEntry', [
@@ -27,6 +34,11 @@ class CoursePerformancePresenter(BasePresenter):
 
     # limit for the number of bars to display in the answer distribution chart
     CHART_LIMIT = 12
+
+    def __init__(self, course_id, timeout=30):
+        super(CoursePerformancePresenter, self).__init__(course_id, timeout)
+        self.course_api_client = slumber.API(settings.COURSE_API_URL,
+                                             auth=TokenAuth(settings.COURSE_API_KEY)).v0.courses
 
     def get_answer_distribution(self, problem_id, problem_part_id):
         """
@@ -139,3 +151,113 @@ class CoursePerformancePresenter(BasePresenter):
         answer_distributions = [i for i in api_response if i['part_id'] == problem_part_id]
         answer_distributions = sorted(answer_distributions, key=lambda a: -a['count'])
         return answer_distributions
+
+    def grading_policy(self):
+        """ Returns the grading policy for the represented course."""
+        key = '{}_grading_policy'.format(self.course_id)
+        grading_policy = cache.get(key)
+
+        if not grading_policy:
+            logger.debug('Retrieving grading policy for course: %s', self.course_id)
+            grading_policy = self.course_api_client(self.course_id).grading_policy.get()
+            cache.set(key, grading_policy)
+
+        return grading_policy
+
+    def assignment_types(self):
+        """ Returns the assignment types for the represented course."""
+        grading_policy = self.grading_policy()
+        return [gp['assignment_type'] for gp in grading_policy]
+
+    def _course_problems(self):
+        key = 'course_{}_problems'.format(self.course_id)
+        problems = cache.get(key)
+
+        if not problems:
+            # Get the problems from the API
+            logger.debug('Retrieving problem submissions for course: %s', self.course_id)
+            problems = self.client.courses(self.course_id).problems()
+
+            # Create a lookup table
+            table = {}
+            for problem in problems:
+                _id = problem.pop('module_id')
+                problem['id'] = _id
+                table[_id] = problem
+
+            problems = table
+            cache.set(key, problems)
+
+        return problems
+
+    def _add_submissions_and_part_ids(self, assignment):
+        key = 'assignment_{}_problems'.format(assignment['id'])
+        problems = cache.get(key)
+
+        if not problems:
+            DEFAULT_DATA = {
+                'total_submissions': 0,
+                'correct_submissions': 0,
+                'part_ids': []
+            }
+
+            problems = assignment['problems']
+            _course_problems = self._course_problems()
+
+            for index, problem in enumerate(problems):
+                data = _course_problems.get(problem['id'], DEFAULT_DATA)
+                data['index'] = index + 1
+                problem.update(data)
+
+            cache.set(key, problems)
+
+        assignment['problems'] = problems
+
+    def assignments(self, assignment_type=None):
+        """ Returns the assignments (and problems) for the represented course. """
+
+        # Check for cached assignments for the given assignment type
+        assignment_type_key = '{}_assignments_{}'.format(self.course_id, assignment_type)
+        assignments = cache.get(assignment_type_key)
+
+        if not assignments:
+            all_assignments_key = '{}_assignments'.format(self.course_id)
+            assignments = cache.get(all_assignments_key)
+
+            if not assignments:
+                logger.debug('Retrieving assignments for course: %s', self.course_id)
+                assignments = self.course_api_client(self.course_id).graded_content.get(
+                    filter_children_category='problem')
+
+                # Change the key name from format (less-specific to our use case) to assignment_type (more accurate).
+                for assignment in assignments:
+                    assignment['assignment_type'] = assignment.pop('format')
+                    assignment['problems'] = assignment.pop('children')
+
+                cache.set(all_assignments_key, assignments)
+
+            if assignment_type:
+                assignment_type = assignment_type.lower()
+                assignments = [assignment for assignment in assignments if
+                               assignment['assignment_type'].lower() == assignment_type]
+
+            for index, assignment in enumerate(assignments):
+                self._add_submissions_and_part_ids(assignment)
+                problems = assignment['problems']
+                assignment['num_problems'] = len(problems)
+                assignment['total_submissions'] = sum(problem.get('total_submissions', 0) for problem in problems)
+                assignment['correct_submissions'] = sum(problem.get('correct_submissions', 0) for problem in problems)
+                assignment['index'] = index + 1
+
+            # Cache the data for the course-assignment_type combination.
+            cache.set(assignment_type_key, assignments)
+
+        return assignments
+
+    def assignment(self, assignment_id):
+        """ Retrieve a specific assignment. """
+        filtered = [assignment for assignment in self.assignments() if assignment['id'] == assignment_id]
+        if filtered:
+            return filtered[0]
+        else:
+            return None

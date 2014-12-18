@@ -38,6 +38,7 @@ if ENABLE_OAUTH_TESTS and not (LMS_HOSTNAME and LMS_USERNAME and LMS_PASSWORD):
     raise Exception('LMS settings must be set in order to test OAuth.')
 
 TEST_COURSE_ID = os.environ.get('TEST_COURSE_ID', u'edX/DemoX/Demo_Course')
+TEST_ASSIGNMENT_ID = os.environ.get('TEST_ASSIGNMENT_ID', u'i4x://edX/DemoX/sequential/basic_questions')
 TEST_PROBLEM_ID = os.environ.get('TEST_PROBLEM_ID', u'i4x://edX/DemoX.1/problem/05d289c5ad3d47d48a77622c4a81ec36')
 TEST_PROBLEM_PART_ID = os.environ.get('TEST_PROBLEM_PART_ID', u'i4x-edX-DemoX_1-problem-05c289c5ad3d47d48a77622c4a81ec33_2_1')
 
@@ -53,3 +54,6 @@ COURSE_API_KEY = os.environ.get('COURSE_API_KEY')
 
 if ENABLE_COURSE_API and not (COURSE_API_URL and COURSE_API_KEY):
     raise Exception('Course API details not supplied!')
+
+DEFAULT_ASSIGNMENT_TYPE = os.environ.get('DEFAULT_ASSIGNMENT_TYPE', 'Homework')
+DEFAULT_ASSIGNMENT_ID = os.environ.get('DEFAULT_ASSIGNMENT_ID', 'i4x://edX/DemoX/sequential/basic_questions')

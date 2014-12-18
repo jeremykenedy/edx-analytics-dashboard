@@ -38,7 +38,7 @@ define(['nvd3', 'underscore', 'utils/utils', 'views/chart-view'],
 
                 // NVD3's bar views display tooltips differently than for graphs
                 chart.tooltipContent(function(key, x, y, e) {
-                    var trend = self.options.trends[0],
+                    var trend = self.options.trends[e.seriesIndex],
                         // 'e' contains the raw x-value and 'x' could be formatted (e.g. truncated, ellipse, etc.)
                         xValue = self.formatXValue(e.point[self.options.x.key]),
                         swatchColor = trend.color,  // e.g #ff9988 or a function
@@ -75,7 +75,6 @@ define(['nvd3', 'underscore', 'utils/utils', 'views/chart-view'],
                     });
                 });
             }
-
         });
 
         return BarView;
