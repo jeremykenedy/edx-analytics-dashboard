@@ -15,4 +15,5 @@ Using edX Insights
    Overview
    enrollment/index
    engagement/index
+   performance/index
    Reference

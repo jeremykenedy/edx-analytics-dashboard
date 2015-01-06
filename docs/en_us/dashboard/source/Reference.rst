@@ -16,6 +16,8 @@ edX Insights are computed. It contains sections for:
 * :ref:`Location Computations`
 
 * :ref:`Engagement Computations`
+
+* :ref:`Performance Computations`
   
 * :ref:`Error Conditions`
 
@@ -371,6 +373,24 @@ For information about viewing engagement metrics in edX Insights, see
 
 * The y-axis shows the number of unique users.
 
+
+.. _Performance Computations:
+
+*****************************
+Performance Computations
+*****************************
+
+Student answer distribution data is available for problems of these types:
+
+* Checkboxes (`<choiceresponse>`)
+* Dropdown (`<optionresponse>`)
+* Multiple choice (`<multiplechoiceresponse>`)
+* Numerical input (`<numericalresponse>`)
+* Text input (`<stringresponse>`)
+* Math expression input (`<formularesponse>`)
+
+
+
 .. _Error Conditions:
 
 *****************
@@ -398,3 +418,8 @@ In the following situations, data may not be available in edX Insights.
   courses and courses that finished running early in the history of the edX
   platform, data for enrollment activity and student engagement may not be
   available.
+
+* Charts are not available for problems with randomization enabled in Studio.
+  For these problems, the Answer Distribution report and downloadable CSV file
+  include one row for each problem-variant-answer combination selected by your
+  students.
