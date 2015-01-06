@@ -1,7 +1,7 @@
 .. _Demographics_Gender:
 
 ################################
-Enrollment Demographics: Gender
+Gender Demographics
 ################################
 
 What is the gender balance in my course? Knowing the male-female ratio in your

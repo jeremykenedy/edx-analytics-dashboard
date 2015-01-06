@@ -44,3 +44,11 @@ the file includes up to five rows, one for each answer selected by at least one
 student. For problems with **Randomization** enabled in Studio (sometimes
 called rerandomization), there is one row for each problem-variant-answer
 combination selected by your students.
+
+*****************************
+Gaining Insight into 
+*****************************
+
+
+
+
