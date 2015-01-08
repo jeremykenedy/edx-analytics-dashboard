@@ -380,14 +380,69 @@ For information about viewing engagement metrics in edX Insights, see
 Performance Computations
 *****************************
 
-Student answer distribution data is available for problems of these types:
+* Student answer distribution data is available for problems of these types only.
 
-* Checkboxes (`<choiceresponse>`)
-* Dropdown (`<optionresponse>`)
-* Multiple choice (`<multiplechoiceresponse>`)
-* Numerical input (`<numericalresponse>`)
-* Text input (`<stringresponse>`)
-* Math expression input (`<formularesponse>`)
+  * Checkboxes (`<choiceresponse>`)
+  * Dropdown (`<optionresponse>`)
+  * Multiple choice (`<multiplechoiceresponse>`)
+  * Numerical input (`<numericalresponse>`)
+  * Text input (`<stringresponse>`)
+  * Math expression input (`<formularesponse>`)
+
+* Computations are updated daily. 
+
+**Answer Distribution report**
+
+The CSV file contains the following columns.
+
+.. list-table::
+   :widths: 20 60
+   :header-rows: 1
+
+   * - Column
+     - Description
+   * - answer_value_numeric
+     - The value entered by the student for numerical input problems.
+   * - answer_value_text
+     - The text label of the answer choice for checkboxes, dropdown, and
+       multiple choice problems. The value entered by the student for text
+       input and math expression input problems.
+   * - correct
+     - TRUE if this answer value is correct, or FALSE if this answer value is
+       incorrect.
+   * - count
+     - The number of times that students entered or selected this answer as
+       their most recent submission for the problem or problem variant. For
+       problems with the number of attempts set to a value greater than 1,
+       this means that each student contributes a maximum of 1 to this count,
+       even if the same answer is provided in multiple attempts.
+   * - course_id
+     - The identifier for the course run.
+   * - created
+     - The date and time of the computation.
+   * - module_id
+     - The internal identifier for the problem component.
+   * - part_id
+     - For a problem component that contains multiple questions, the internal
+       identifier for each problem. For a problem component that
+       contains a single question, the internal identifier of that problem.
+   * - problem_display_name
+     - The display name defined for the problem.
+   * - question_text
+     - The label for accessibility that appears above the answer choices or
+       the text entry field for the problem. In the Studio Simple Editor, this
+       text is surrounded by two pairs of angle brackets (>>Question<<). Blank
+       for questions that do not have an accessibility label.
+   * - value_id
+     - The internal identifier for the answer choice provided for checkboxes
+       and multiple choice problems. Blank for dropdown, numerical input, text
+       input, and math expression input problems.
+   * - variant
+     - For problems that use the randomization setting in Studio, contains
+       the unique identifier for a variant of the problem. Blank for problems
+       that have this setting defined as **Never** (the default).
+
+
 
 
 
@@ -420,6 +475,6 @@ In the following situations, data may not be available in edX Insights.
   available.
 
 * Charts are not available for problems with randomization enabled in Studio.
-  For these problems, the Answer Distribution report and downloadable CSV file
-  include one row for each problem-variant-answer combination selected by your
-  students.
+  The Answer Distribution report and downloadable CSV file are available for
+  these problems, and include one row for each problem-variant-answer
+  combination selected by your students.

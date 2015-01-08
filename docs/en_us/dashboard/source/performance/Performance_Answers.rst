@@ -6,49 +6,178 @@ Student Answers
 
 .. revise title to match UI when available
 
-You can use the Student Answer Distribution report to review student responses
-to assignments, which can then help you evaluate the structure and completeness
-of your courseware and problem components.
+How are students answering questions? Answer distributions show you the
+responses that students submit for problems and help you evaluate what they
+find difficult.
 
-Charts can help make your students' common misconceptions  easier to
-identify.
+Answer distributions are updated every day. Responses to problems made through
+the end of the previous day (23:59 UTC) are included.
 
-You can adjust your course content based on common student mistakes. While most
-students in this example selected the correct answer, the number of incorrect
-answer(s) can guide future changes to the courseware.
+*************************************
+Gaining Insight into Course Problems
+*************************************
 
-
-As an example, you define a text input question in Studio to have a single
-correct answer, "Warfarin". When you produce the Student Answer Distribution
-report, you verify that this answer was in fact marked correct. However, as you view the report you notice other student answers that you did
-not set up to be marked as correct in Studio, but that you might (or might not)
-also consider to be correct, such as "Warfarin or Coumadin". For
-future iterations of your course you may want to revise the question or update
-the problem to evaluate additional variations of the answer as correct.
-
-
-For certain types of problems in your course, you can download a CSV file with
-data about the distribution of student answers. Student answer distribution data
-is included in the file for problems of these types:
+Student answer distribution data is available in edX Insights for problem
+components of these types:
 
 * Checkboxes (``<choiceresponse>``)
+
 * Dropdown (``<optionresponse>``)
+
 * Multiple choice (``<multiplechoiceresponse>``)
+
 * Numerical input (``<numericalresponse>``)
+
 * Text input (``<stringresponse>``)
+
 * Math expression input (``<formularesponse>``)
 
-The file includes a row for each problem-answer combination selected by your
-students. For example, for a problem that has a total of five possible answers
-the file includes up to five rows, one for each answer selected by at least one
-student. For problems with **Randomization** enabled in Studio (sometimes
-called rerandomization), there is one row for each problem-variant-answer
-combination selected by your students.
+EdX Insights delivers answer distribution data in a bar chart and a report
+that you can view or download. For problem components that include more than
+one question, or part, a separate chart and report are presented for each
+part. Descriptions follow; for detailed information about the computations,
+see :ref:`Reference`.
 
-*****************************
-Gaining Insight into 
-*****************************
+======================================
+Answer Distribution Chart
+======================================
+
+The bars on this chart represent the number of enrolled students who selected
+or provided a particular answer to a question in a problem component. The
+x-axis includes the most frequently submitted answers, up to a maximum of 12.
+Due to space limitations, the x-axis labels might be truncated. Moving your
+cursor over each bar shows a longer version of the answer value.
+
+All student answers, and complete answer values, are available for review in
+tabular format and can be downloaded.
+
+Examples of the answer distribution chart follow. In the first example, most
+students are selecting the correct answer for a multiple choice problem.
+
+.. image:: ../images/answer_dist_easy.png
+   :alt: A bar chart showing that most students selected the correct answer
+       out of four possible choices
+
+.. TsinghuaX/00690242_1x/problem/268b43628e6d45f79c52453a590f9829/answerdistribution/i4x-TsinghuaX-00690242_1x-problem-268b43628e6d45f79c52453a590f9829_2_1/
+
+.. second example - a more nuanced question? or one that might be misconstrued?
+
+The last example is for a problem that has several parts. You use the list
+control above the chart to choose each of the parts. When you select a
+different part, both the chart and the report refresh with data for that
+problem part.
+
+.. image of the first part of a multipart problem with the dropdown circled
+
+See the :ref:`Reference` for additional detail.
+
+======================================
+Answer Distribution Report
+======================================
+
+A report with a row for each problem-answer combination submitted by your
+students is available for review or download. The report columns show each
+answer, identify the correct answer or answers, and provide the number of
+students who selected or provided that answer.
+
+To download the Answer Distribution report in a comma-separated value
+file, click **Download CSV**. The CSV file contains the following columns:
+
+* answer_value_numeric
+* answer_value_text
+* correct
+* count
+* course_id
+* created (the date and time of the computation)
+* module_id
+* part_id
+* problem_display_name
+* question_text
+* value_id
+* variant
+
+The report and the file include one row for each problem-answer combination
+selected by your students. For example, a dropdown problem has five possible
+answers. The report or file contains up to five rows, one for each answer
+selected by at least one student.
+
+For problems that enable the randomization feature in Studio, there is one row
+for each problem-variant-answer combination selected by at least one student.
+For more information about problem randomization, see `Randomization`_.
+
+See the :ref:`Reference` for a detailed description of each value.
+
+*******************************************************
+Analytics in Action: Interpreting Answer Distributions
+*******************************************************
+
+Answer distributions can help you:
+
+* Understand how difficult a problem is for students to answer correctly. 
+
+* See common mistakes.
+
+* Understand student misconceptions.
+
+* Detect errors in problem components.
+
+===============================================
+Researching Unexpected Difficulties
+===============================================
+
+For problem types that provide both the question and a set of possible answers
+(checkboxes, dropdown, and multiple choice), answer distributions help you
+assess how difficult it is for students to select the correct answer. With the
+answer distribution chart, you can visually contrast the number of students
+who select incorrect answers with the number who answer correctly. 
+
+If the number of students who answer the problem incorrectly surprises you,
+research can reveal a variety of causes. Your investigation might begin with
+some of these questions.
+
+* Is the text of the question and its answers clear? Has it been translated
+  accurately?
+
+* Does the course outline include relevant course content before the problem,
+  or after it?
+
+* Are all of the course prerequisites presented to potential students?
+
+* Does the problem rely on student access to a video or textbook? Do students
+  have access to alternatives: are there transcripts for the videos, and can
+  the textbook files be read by a screen reader?
+
+* Are students relying on conventional wisdom to answer the question instead
+  of newly acquired knowledge?
+
+The results of your investigation can guide changes to future course runs.
+
+.. others?
+
+===============================================
+Investigating Similar Responses
+===============================================
+
+For open-ended problem types that provide only the question (numerical, text,
+and math expression input), answer distributions can help you identify similar
+responses. Through the answer distribution report, you have access to every
+answer submitted by a student. The chart, however, presents only the 12 most
+frequently submitted responses. Your initial investigation into how students
+answer a question can begin with this manageably-sized set.
+
+For example, you create a text input problem with a single correct answer,
+"Warfarin". When you review its answer distribution chart, you notice how many
+similar, but incorrect, variations your students provide, including "warfarin
+sodium" and "Warfarin or Coumadin". 
+
+The proximity of these variations in the chart might reassure you that more
+students understand the relevant course material than the number who actually
+provided the correct answer. If so, it might also prompt you to update the
+problem so that the additional variations of the answer are evaluated as
+correct. Alternatively, you might decide to revise the question so that your
+parameters for the correct response are clearer.
 
 
 
 
+.. _Randomization: http://edx.readthedocs.org/projects/edx-partner-course-staff/en/latest/creating_content/create_problem.html#randomization
