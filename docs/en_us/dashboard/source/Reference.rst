@@ -382,18 +382,31 @@ Performance Computations
 
 * Student answer distribution data is available for problems of these types only.
 
-  * Checkboxes (`<choiceresponse>`)
-  * Dropdown (`<optionresponse>`)
-  * Multiple choice (`<multiplechoiceresponse>`)
-  * Numerical input (`<numericalresponse>`)
-  * Text input (`<stringresponse>`)
-  * Math expression input (`<formularesponse>`)
+  * Checkboxes (``<choiceresponse>``)
+  * Dropdown (``<optionresponse>``)
+  * Multiple choice (``<multiplechoiceresponse>``)
+  * Numerical input (``<numericalresponse>``)
+  * Text input (``<stringresponse>``)
+  * Math expression input (``<formularesponse>``)
+  
+  For information about the problem types that can be included in courses and
+  their settings, see `Creating Exercises and Tools`_.
 
 * Computations are updated daily. 
 
-**Answer Distribution report**
+* Only problems that have a **Maximum Attempts** setting of 1 or higher are
+  included on the report. For problems with a **Maximum Attempts** setting of
+  greater than 1, each student contributes a maximum of 1 to the answer count,
+  even if the same answer is provided in multiple attempts.
 
-The CSV file contains the following columns.
+* Only problem activity that occurred after October 2013 is included. In
+  addition, at least one student must have submitted an answer after early
+  March 2014.
+
+**Answer Distribution CSV file**
+
+The CSV file contains a superset of the data that is included in the chart and
+report. The CSV file contains the following columns.
 
 .. list-table::
    :widths: 20 60
@@ -406,16 +419,24 @@ The CSV file contains the following columns.
    * - answer_value_text
      - The text label of the answer choice for checkboxes, dropdown, and
        multiple choice problems. The value entered by the student for text
-       input and math expression input problems.
+       input and math expression input problems. 
+
+       For checkboxes and multiple choice problems, answer choices selected 
+       by at least one student after October 2013, but not selected since 
+       early March 2014, do not include the answer_value_text. The value_id 
+       is available for these problems.
+
    * - correct
      - TRUE if this answer value is correct, or FALSE if this answer value is
        incorrect.
    * - count
      - The number of times that students entered or selected this answer as
-       their most recent submission for the problem or problem variant. For
-       problems with the number of attempts set to a value greater than 1,
-       this means that each student contributes a maximum of 1 to this count,
-       even if the same answer is provided in multiple attempts.
+       their most recent submission for the problem or problem variant. 
+
+       The count reflects the entire problem history. If you change a 
+       problem after it is released, it might not be possible for you to 
+       determine which answers were given before and after you made the change.
+
    * - course_id
      - The identifier for the course run.
    * - created
@@ -433,6 +454,11 @@ The CSV file contains the following columns.
        the text entry field for the problem. In the Studio Simple Editor, this
        text is surrounded by two pairs of angle brackets (>>Question<<). Blank
        for questions that do not have an accessibility label.
+
+       For problems that use randomization, if a particular answer has not 
+       been selected since early March 2014, the question_text is blank for 
+       that answer.
+
    * - value_id
      - The internal identifier for the answer choice provided for checkboxes
        and multiple choice problems. Blank for dropdown, numerical input, text
@@ -443,8 +469,18 @@ The CSV file contains the following columns.
        that have this setting defined as **Never** (the default).
 
 
+After you download the CSV file, be aware that different spreadsheet
+applications can display the same data in different ways.
 
+* Not all spreadsheet applications interpret and render UTF-8 encoded
+  characters correctly.
 
+* Some spreadsheet applications alter data for display purposes, such as zero-
+  filling numbers expressed as decimals.
+
+If you notice characters that do not display as expected, or multiple lines
+that have the same answer_value but different counts, try opening the file in a
+different spreadsheet application or a text editor.
 
 .. _Error Conditions:
 
@@ -478,3 +514,6 @@ In the following situations, data may not be available in edX Insights.
   The Answer Distribution report and downloadable CSV file are available for
   these problems, and include one row for each problem-variant-answer
   combination selected by your students.
+
+
+.. _Creating Exercises and Tools: http://edx.readthedocs.org/projects/edx-partner-course-staff/en/latest/exercises_tools/index.html

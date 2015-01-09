@@ -49,6 +49,8 @@ edX Insights presents.
  * :ref:`Enrollment_Geography`
 
  * :ref:`Engagement_Content`
+ 
+ * :ref:`Performance_Answers`
 
 Each of these chapters contains a section for anecdotal "Analytics in Action".
 These sections showcase how collected data has revealed information about

@@ -20,17 +20,17 @@ Gaining Insight into Course Problems
 Student answer distribution data is available in edX Insights for problem
 components of these types:
 
-* Checkboxes (``<choiceresponse>``)
+* Checkboxes
 
-* Dropdown (``<optionresponse>``)
+* Dropdown
 
-* Multiple choice (``<multiplechoiceresponse>``)
+* Multiple choice
 
-* Numerical input (``<numericalresponse>``)
+* Numerical input
 
-* Text input (``<stringresponse>``)
+* Text input
 
-* Math expression input (``<formularesponse>``)
+* Math expression input
 
 EdX Insights delivers answer distribution data in a bar chart and a report
 that you can view or download. For problem components that include more than
@@ -60,12 +60,16 @@ students are selecting the correct answer for a multiple choice problem.
 
 .. TsinghuaX/00690242_1x/problem/268b43628e6d45f79c52453a590f9829/answerdistribution/i4x-TsinghuaX-00690242_1x-problem-268b43628e6d45f79c52453a590f9829_2_1/
 
+TBD: The second example shows 
+
 .. second example - a more nuanced question? or one that might be misconstrued?
 
 The last example is for a problem that has several parts. You use the list
 control above the chart to choose each of the parts. When you select a
 different part, both the chart and the report refresh with data for that
 problem part.
+
+TBD: image to come
 
 .. image of the first part of a multipart problem with the dropdown circled
 
@@ -81,20 +85,7 @@ answer, identify the correct answer or answers, and provide the number of
 students who selected or provided that answer.
 
 To download the Answer Distribution report in a comma-separated value
-file, click **Download CSV**. The CSV file contains the following columns:
-
-* answer_value_numeric
-* answer_value_text
-* correct
-* count
-* course_id
-* created (the date and time of the computation)
-* module_id
-* part_id
-* problem_display_name
-* question_text
-* value_id
-* variant
+file, click **Download CSV**.
 
 The report and the file include one row for each problem-answer combination
 selected by your students. For example, a dropdown problem has five possible
@@ -105,7 +96,7 @@ For problems that enable the randomization feature in Studio, there is one row
 for each problem-variant-answer combination selected by at least one student.
 For more information about problem randomization, see `Randomization`_.
 
-See the :ref:`Reference` for a detailed description of each value.
+See the :ref:`Reference` for a detailed description of each column.
 
 *******************************************************
 Analytics in Action: Interpreting Answer Distributions
@@ -171,12 +162,12 @@ similar, but incorrect, variations your students provide, including "warfarin
 sodium" and "Warfarin or Coumadin". 
 
 The proximity of these variations in the chart might reassure you that more
-students understand the relevant course material than the number who actually
-provided the correct answer. If so, it might also prompt you to update the
-problem so that the additional variations of the answer are evaluated as
-correct. Alternatively, you might decide to revise the question so that your
-parameters for the correct response are clearer.
-
+students understand the relevant course material than is indicated by the
+number who actually provided the correct answer. If so, it might also prompt
+you to update the problem so that the additional variations of the answer are
+evaluated as correct. Alternatively, you might decide to revise the question
+so that your parameters for the correct response are clearer, or change the
+problem type to multiple choice.
 
 
 
