@@ -136,7 +136,7 @@ During edX user account registration, students can provide demographic data
 about themselves. Demographic distributions are computed every day to reflect
 changes in course enrollment.
 
-Currently, students make selections from dropdown lists on the edx.org and
+Currently, students make selections from drop-down lists on the edx.org and
 edge.edx.org registration pages to provide demographic data.
 
 * Students cannot change the selections that they make after registration is
@@ -380,7 +380,8 @@ For information about viewing engagement metrics in edX Insights, see
 Performance Computations
 *****************************
 
-* Student answer distribution data is available for problems of these types only.
+* Student answer distribution data is available for problems of these types
+  only.
 
   * Checkboxes (``<choiceresponse>``)
   * Dropdown (``<optionresponse>``)
@@ -394,14 +395,14 @@ Performance Computations
 
 * Computations are updated daily. 
 
-* Only problems that have a **Maximum Attempts** setting of 1 or higher are
-  included on the report. For problems with a **Maximum Attempts** setting of
-  greater than 1, each student contributes a maximum of 1 to the answer count,
-  even if the same answer is provided in multiple attempts.
+* Problems are included on the report if students can click **Check** to
+  submit their responses. If students can only save their responses without
+  submitting them (that is, the **Maximum Attempts** for the problem is set to
+  0), data is not available for student answer distribution computations.
 
-* Only problem activity that occurred after October 2013 is included. In
-  addition, at least one student must have submitted an answer after early
-  March 2014.
+* Only problem activity that occurred after 23 October 2013 is included. In
+  addition, at least one student must have submitted an answer after 6 March
+  2014.
 
 **Answer Distribution CSV file**
 
@@ -421,10 +422,10 @@ report. The CSV file contains the following columns.
        multiple choice problems. The value entered by the student for text
        input and math expression input problems. 
 
-       For checkboxes and multiple choice problems, answer choices selected 
-       by at least one student after October 2013, but not selected since 
-       early March 2014, do not include the answer_value_text. The value_id 
-       is available for these problems.
+       For checkboxes and multiple choice problems, answer choices selected by
+       at least one student after 23 October 2013, but not selected after 6
+       March 2014, do not include the answer_value_text. The value_id is
+       available for these problems.
 
    * - correct
      - TRUE if this answer value is correct, or FALSE if this answer value is
@@ -450,13 +451,13 @@ report. The CSV file contains the following columns.
    * - problem_display_name
      - The display name defined for the problem.
    * - question_text
-     - The label for accessibility that appears above the answer choices or
-       the text entry field for the problem. In the Studio Simple Editor, this
+     - The accessibility label that appears above the answer choices or
+       the value entry field for the problem. In the Studio Simple Editor, this
        text is surrounded by two pairs of angle brackets (>>Question<<). Blank
        for questions that do not have an accessibility label.
 
        For problems that use randomization, if a particular answer has not 
-       been selected since early March 2014, the question_text is blank for 
+       been selected since 6 March 2014, the question_text is blank for 
        that answer.
 
    * - value_id

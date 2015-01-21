@@ -45,8 +45,12 @@ Answer Distribution Chart
 The bars on this chart represent the number of enrolled students who selected
 or provided a particular answer to a question in a problem component. The
 x-axis includes the most frequently submitted answers, up to a maximum of 12.
-Due to space limitations, the x-axis labels might be truncated. Moving your
+Due to space limitations, x-axis labels might be truncated. Moving your
 cursor over each bar shows a longer version of the answer value.
+
+You can review the problem component as a student does in the LMS: click
+**View Live** and then at the top of the page click **Staff View**. The LMS
+displays the Student View. For more information, see `View Your Live Course`_.
 
 All student answers, and complete answer values, are available for review in
 tabular format and can be downloaded.
@@ -172,3 +176,5 @@ problem type to multiple choice.
 
 
 .. _Randomization: http://edx.readthedocs.org/projects/edx-partner-course-staff/en/latest/creating_content/create_problem.html#randomization
+
+.. _View Your Live Course: http://edx.readthedocs.org/projects/edx-partner-course-staff/en/latest/developing_course/testing_courseware.html?highlight=view%20live#view-your-live-course
