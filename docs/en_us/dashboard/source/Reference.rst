@@ -400,6 +400,8 @@ Performance Computations
   submitting them (that is, the **Maximum Attempts** for the problem is set to
   0), data is not available for student answer distribution computations.
 
+.. this can move when navigation gets added. The concept of "graded" relies on students being able to submit (click check) their work
+
 * Only problem activity that occurred after 23 October 2013 is included. In
   addition, at least one student must have submitted an answer after 6 March
   2014.
@@ -415,16 +417,14 @@ report. The CSV file contains the following columns.
 
    * - Column
      - Description
-   * - answer_value_numeric
-     - The value entered by the student for numerical input problems.
-   * - answer_value_text
+   * - answer_value
      - The text label of the answer choice for checkboxes, dropdown, and
        multiple choice problems. The value entered by the student for text
-       input and math expression input problems. 
+       input, numerical input, and math expression input problems. 
 
        For checkboxes and multiple choice problems, answer choices selected by
        at least one student after 23 October 2013, but not selected after 6
-       March 2014, do not include the answer_value_text. The value_id is
+       March 2014, do not include an answer_value. The value_id is
        available for these problems.
 
    * - correct

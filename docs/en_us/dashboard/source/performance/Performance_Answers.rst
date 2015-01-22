@@ -64,7 +64,7 @@ students are selecting the correct answer for a multiple choice problem.
 
 .. TsinghuaX/00690242_1x/problem/268b43628e6d45f79c52453a590f9829/answerdistribution/i4x-TsinghuaX-00690242_1x-problem-268b43628e6d45f79c52453a590f9829_2_1/
 
-TBD: The second example shows 
+TBD: The second example shows... 
 
 .. second example - a more nuanced question? or one that might be misconstrued?
 
