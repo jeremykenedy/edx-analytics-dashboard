@@ -35,7 +35,7 @@ class CoursePerformancePresenter(BasePresenter):
     # limit for the number of bars to display in the answer distribution chart
     CHART_LIMIT = 12
 
-    def __init__(self, course_id, timeout=30):
+    def __init__(self, course_id, timeout=5):
         super(CoursePerformancePresenter, self).__init__(course_id, timeout)
         self.course_api_client = slumber.API(settings.COURSE_API_URL,
                                              auth=TokenAuth(settings.COURSE_API_KEY)).v0.courses
@@ -178,7 +178,7 @@ class CoursePerformancePresenter(BasePresenter):
             logger.debug('Retrieving problem submissions for course: %s', self.course_id)
             problems = self.client.courses(self.course_id).problems()
 
-            # Create a lookup table
+            # Create a lookup table so that submission data can be quickly retrieved by downstream consumers.
             table = {}
             for problem in problems:
                 _id = problem.pop('module_id')
@@ -202,10 +202,10 @@ class CoursePerformancePresenter(BasePresenter):
             }
 
             problems = assignment['problems']
-            _course_problems = self._course_problems()
+            course_problems = self._course_problems()
 
             for index, problem in enumerate(problems):
-                data = _course_problems.get(problem['id'], DEFAULT_DATA)
+                data = course_problems.get(problem['id'], DEFAULT_DATA)
                 data['index'] = index + 1
                 problem.update(data)
 
@@ -216,7 +216,6 @@ class CoursePerformancePresenter(BasePresenter):
     def assignments(self, assignment_type=None):
         """ Returns the assignments (and problems) for the represented course. """
 
-        # Check for cached assignments for the given assignment type
         assignment_type_key = '{}_assignments_{}'.format(self.course_id, assignment_type)
         assignments = cache.get(assignment_type_key)
 

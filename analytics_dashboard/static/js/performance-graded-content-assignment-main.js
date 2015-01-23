@@ -3,7 +3,8 @@ require(['vendor/domReady!', 'load/init-page'], function (doc, page) {
 
     require(['underscore', 'views/data-table-view', 'views/stacked-bar-view'],
         function (_, DataTableView, StackedBarView) {
-            var model = page.models.courseModel,
+            var tableColumns,
+                model = page.models.courseModel,
                 assignmentType = model.get('assignmentType'),
                 submissionColumns = [
                     {
@@ -32,9 +33,9 @@ require(['vendor/domReady!', 'load/init-page'], function (doc, page) {
                 interactiveTooltipHeaderTemplate: _.template(assignmentType + ' #<%=value%>')
             });
 
-            var tableColumns = [
-                    {key: 'index', title: gettext('Order'), type: 'number', className: 'text-right'},
-                    {key: 'name', title: gettext('Problem Name')}
+            tableColumns = [
+                {key: 'index', title: gettext('Order'), type: 'number', className: 'text-right'},
+                {key: 'name', title: gettext('Problem Name')}
             ].concat(submissionColumns);
 
             new DataTableView({

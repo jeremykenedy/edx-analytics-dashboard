@@ -1,9 +1,9 @@
 import datetime
 
-from django.core.cache import cache
-import mock
-from django.test import TestCase
 import analyticsclient.constants.activity_type as AT
+from django.core.cache import cache
+from django.test import TestCase
+import mock
 
 from courses.presenters import BasePresenter
 from courses.presenters.engagement import CourseEngagementPresenter

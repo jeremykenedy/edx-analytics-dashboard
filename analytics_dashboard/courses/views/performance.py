@@ -40,7 +40,7 @@ class PerformanceTemplateView(CourseTemplateWithNavView, CourseAPIMixin):
             # Return the appropriate response if a 404 occurred.
             response = getattr(e, 'response')
             if response is not None and response.status_code == 404:
-                logger.info('Course not found: %s', self.course_id)
+                logger.info('Course API data not found for %s: %s', self.course_id, e)
                 raise Http404
 
             # Not a 404. Continue raising the error.
@@ -136,7 +136,6 @@ class PerformanceGradedContent(PerformanceTemplateView):
 
 class PerformanceGradedContentByType(PerformanceTemplateView):
     template_name = 'courses/performance_graded_content_by_type.html'
-    page_title = _('Graded Content')
     page_name = 'performance_graded_content_by_type'
 
     def dispatch(self, request, *args, **kwargs):
@@ -152,6 +151,7 @@ class PerformanceGradedContentByType(PerformanceTemplateView):
         if not assignments:
             # If there are no assignments, either the course is incomplete or the assignment type is invalid.
             # It is more likely that the assignment type is invalid, so return a 404.
+            logger.info('No assignments of type %s were found for course %s', assignment_type, self.course_id)
             raise Http404
 
         context.update({

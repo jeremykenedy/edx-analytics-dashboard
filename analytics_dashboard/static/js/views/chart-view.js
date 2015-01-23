@@ -120,7 +120,7 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
             },
 
             /**
-            * Add ellipses for long labels shown beneath the bar.
+            * Truncate (e.g. add ellipses) long labels shown beneath the bar.
             */
             truncateXTick: function (d) {   // jshint ignore:line
                 throw 'Not implemented';

@@ -29,7 +29,7 @@ button.chart-info {
 }
 
 .chart-tooltip {
-  @extend .pull-right;
+  float: right;
   padding-right: $padding-small-horizontal;
   padding-top: $padding-large-vertical;
 }
@@ -595,7 +595,7 @@ table.dataTable thead th.sorting_desc:after {
     text-align: right;
 
     .chart-tooltip {
-      float: none !important;
+      float: none;
       padding: 0 0 $padding-large-vertical;
     }
   }
@@ -665,9 +665,7 @@ table.dataTable thead th.sorting_desc:after {
         }
 
         > .disabled > a {
-          &,
-          &:hover,
-          &:focus {
+          &, &:hover, &:focus {
             color: $navbar-default-link-disabled-color;
             background-color: $navbar-default-link-disabled-bg;
           }

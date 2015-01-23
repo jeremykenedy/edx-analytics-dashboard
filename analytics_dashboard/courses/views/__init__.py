@@ -52,6 +52,9 @@ class CourseAPIMixin(object):
 
         return super(CourseAPIMixin, self).dispatch(request, *args, **kwargs)
 
+    def _course_detail_cache_key(self, course_id):
+        return 'course_{}_details'.format(course_id)
+
     def get_course_info(self, course_id):
         """
         Retrieve course info from the Course API.
@@ -60,10 +63,8 @@ class CourseAPIMixin(object):
 
         Arguments
             course_id       -- ID of the course for which data should be retrieved
-            depth           -- Number of (tree) levels worth of data to retrieve
-            extra_fields    -- Additional course fields to retrieve
         """
-        key = 'course_{}_details'.format(course_id)
+        key = self._course_detail_cache_key(course_id)
         info = cache.get(key)
 
         if not info:
@@ -87,7 +88,7 @@ class CourseAPIMixin(object):
             # Cache the information so that it doesn't need to be retrieved later.
             for course in course_details:
                 course_id = course['id']
-                key = 'course_{}_details'.format(course_id)
+                key = self._course_detail_cache_key(course_id)
                 cache.set(key, course)
 
             return course_details

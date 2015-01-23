@@ -67,6 +67,7 @@
                   {% if problem.part_ids|length > 1 %}
                     {% for part_id in problem.part_ids %}
                       {% captureas name %}
+                        {# Translators: This refers to the part number of the problem (e.g. Problem 2 Part 1#}
                         {{ problem.name }} {% blocktrans with value=forloop.counter %}Part
                         {{ value }}{% endblocktrans %}
                       {% endcaptureas %}

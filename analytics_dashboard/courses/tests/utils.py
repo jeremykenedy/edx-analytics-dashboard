@@ -637,7 +637,7 @@ class CoursePerformanceMockData(object):
         {
             "assignment_type": "Homework",
             "count": 24,
-            "dropped": 0,
+            "dropped": 1,
             "weight": 0.2
         },
         {
