@@ -19,9 +19,9 @@ define(['nvd3', 'underscore', 'views/discrete-bar-view'],
             },
 
             render: function () {
-                var self = this;
-                var emptyEventHandler = function () {
-                };
+                var self = this,
+                    emptyEventHandler = function () {
+                    };
 
                 DiscreteBarView.prototype.render.call(self);
 
