@@ -35,18 +35,18 @@
         <thead>
         <tr>
           <th>{% trans "Assignment Type" %}</th>
-          <th>{% trans "Grade Percentage" %}</th>
-          <th>{% trans "Number of Assignments" %}</th>
-          <th>{% trans "Dropped Scores" %}</th>
+          <th class="text-right">{% trans "Grade Percentage" %}</th>
+          <th class="text-right">{% trans "Number of Assignments" %}</th>
+          <th class="text-right">{% trans "Dropped Scores" %}</th>
         </tr>
         </thead>
         <tbody>
         {% for item in grading_policy %}
           <tr>
             <td>{{ item.assignment_type }}</td>
-            <td>{% widthratio item.weight 1 100 %}%</td>
-            <td>{{ item.count }}</td>
-            <td>{{ item.dropped }}</td>
+            <td class="text-right">{% widthratio item.weight 1 100 %}%</td>
+            <td class="text-right">{{ item.count }}</td>
+            <td class="text-right">{{ item.dropped }}</td>
           </tr>
         {% endfor %}
         </tbody>
