@@ -1,5 +1,6 @@
 from collections import namedtuple
 import logging
+import datetime
 
 from django.core.cache import cache
 from django.conf import settings
@@ -31,11 +32,12 @@ class CoursePerformancePresenter(BasePresenter):
     """
     Presenter for the performance page.
     """
+    _last_updated = None
 
     # limit for the number of bars to display in the answer distribution chart
     CHART_LIMIT = 12
 
-    def __init__(self, course_id, timeout=5):
+    def __init__(self, course_id, timeout=10):
         super(CoursePerformancePresenter, self).__init__(course_id, timeout)
         self.course_api_client = slumber.API(settings.COURSE_API_URL,
                                              auth=TokenAuth(settings.COURSE_API_KEY)).v0.courses
@@ -67,6 +69,7 @@ class CoursePerformancePresenter(BasePresenter):
 
         answer_type = self._get_answer_type(answer_distributions)
         last_updated = self.parse_api_datetime(answer_distributions[0]['created'])
+        self._last_updated = last_updated
 
         return AnswerDistributionEntry(last_updated, questions, active_question, answer_distributions,
                                        answer_distribution_limited, is_random, answer_type, problem_part_description)
@@ -152,9 +155,20 @@ class CoursePerformancePresenter(BasePresenter):
         answer_distributions = sorted(answer_distributions, key=lambda a: -a['count'])
         return answer_distributions
 
+    def get_cache_key(self, name):
+        return '{}_{}'.format(self.course_id, name)
+
+    @property
+    def last_updated(self):
+        if not self._last_updated:
+            key = self.get_cache_key('problems_last_updated')
+            self._last_updated = cache.get(key)
+
+        return self._last_updated
+
     def grading_policy(self):
         """ Returns the grading policy for the represented course."""
-        key = '{}_grading_policy'.format(self.course_id)
+        key = self.get_cache_key('grading_policy')
         grading_policy = cache.get(key)
 
         if not grading_policy:
@@ -170,7 +184,7 @@ class CoursePerformancePresenter(BasePresenter):
         return [gp['assignment_type'] for gp in grading_policy]
 
     def _course_problems(self):
-        key = 'course_{}_problems'.format(self.course_id)
+        key = self.get_cache_key('problems')
         problems = cache.get(key)
 
         if not problems:
@@ -180,10 +194,23 @@ class CoursePerformancePresenter(BasePresenter):
 
             # Create a lookup table so that submission data can be quickly retrieved by downstream consumers.
             table = {}
+            last_updated = datetime.datetime.min
+
             for problem in problems:
                 _id = problem.pop('module_id')
                 problem['id'] = _id
                 table[_id] = problem
+
+                # Set the last_updated value
+                created = problem.pop('created', None)
+                if created:
+                    created = self.parse_api_datetime(created)
+                    last_updated = max(last_updated, created)
+
+            if last_updated is not datetime.datetime.min:
+                _key = self.get_cache_key('problems_last_updated')
+                cache.set(_key, last_updated)
+                self._last_updated = last_updated
 
             problems = table
             cache.set(key, problems)
@@ -191,7 +218,7 @@ class CoursePerformancePresenter(BasePresenter):
         return problems
 
     def _add_submissions_and_part_ids(self, assignment):
-        key = 'assignment_{}_problems'.format(assignment['id'])
+        key = self.get_cache_key('assignment_{}_problems'.format(assignment['id']))
         problems = cache.get(key)
 
         if not problems:

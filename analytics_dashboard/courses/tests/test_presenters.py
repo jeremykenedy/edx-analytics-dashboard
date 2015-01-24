@@ -19,7 +19,7 @@ class BasePresenterTests(TestCase):
 
     def test_init(self):
         presenter = BasePresenter('edX/DemoX/Demo_Course')
-        self.assertEqual(presenter.client.timeout, 15)
+        self.assertEqual(presenter.client.timeout, 10)
 
         presenter = BasePresenter('edX/DemoX/Demo_Course', timeout=15)
         self.assertEqual(presenter.client.timeout, 15)
@@ -375,13 +375,16 @@ class CoursePerformancePresenterTests(TestCase):
 
     @mock.patch('slumber.Resource.get', mock.Mock(side_effect=CoursePerformanceMockData.MOCK_ASSIGNMENTS))
     def test_assignments(self):
-        """ Verify the presenter returns the correct assignments. """
+        """ Verify the presenter returns the correct assignments and sets the last updated date. """
+
+        self.assertIsNone(self.presenter.last_updated)
 
         with mock.patch('analyticsclient.course.Course.problems', CoursePerformanceMockData.problems):
             # With no assignment type set, the method should return all assignment types.
             assignments = self.presenter.assignments()
             expected_assignments = self._get_expected_assignments()
             self.assertListEqual(assignments, expected_assignments)
+            self.assertEqual(self.presenter.last_updated, utils.CREATED_DATETIME)
 
             # With an assignment type set, the presenter should return only the assignments of the specified type.
             for assignment_type in CoursePerformanceMockData.MOCK_ASSIGNMENT_TYPES:

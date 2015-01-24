@@ -751,7 +751,8 @@ class CoursePerformanceMockData(object):
                     "module_id": problem["id"],
                     "total_submissions": index,
                     "correct_submissions": index,
-                    "part_ids": ["{}_1_2".format(problem["id"])]
+                    "part_ids": ["{}_1_2".format(problem["id"])],
+                    "created": CREATED_DATETIME_STRING
                 })
 
         return problems

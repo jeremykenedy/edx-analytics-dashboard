@@ -71,7 +71,8 @@ class PerformanceTemplateView(CourseTemplateWithNavView, CourseAPIMixin):
 
             context.update({
                 'assignment_type': self.assignment_type,
-                'assignments': assignments
+                'assignments': assignments,
+                'update_message': self.get_last_updated_message(self.presenter.last_updated)
             })
 
         return context
@@ -110,8 +111,7 @@ class PerformanceAnswerDistributionView(PerformanceTemplateView):
             'problem_id': problem_id,
             'problem_part_id': part_id,
             'problem_part_description': answer_distribution_entry.problem_part_description,
-            'view_live_url': view_live_url,
-            'update_message': self.get_last_updated_message(answer_distribution_entry.last_updated)
+            'view_live_url': view_live_url
         })
 
         context['page_data'] = self.get_page_data(context)
