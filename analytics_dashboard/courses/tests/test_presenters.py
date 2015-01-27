@@ -363,12 +363,14 @@ class CoursePerformancePresenterTests(TestCase):
                     'index': i + 1,
                     'total_submissions': i,
                     'correct_submissions': i,
+                    'incorrect_submissions': 0,
                     'part_ids': ["{}_1_2".format(problem["id"])]
                 })
 
             assignment['num_problems'] = num_problems
             assignment['total_submissions'] = sum(problem.get('total_submissions', 0) for problem in problems)
             assignment['correct_submissions'] = sum(problem.get('correct_submissions', 0) for problem in problems)
+            assignment['incorrect_submissions'] = 0
             assignment['index'] = index + 1
 
         return assignments

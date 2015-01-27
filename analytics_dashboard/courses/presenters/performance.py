@@ -197,9 +197,13 @@ class CoursePerformancePresenter(BasePresenter):
             last_updated = datetime.datetime.min
 
             for problem in problems:
-                _id = problem.pop('module_id')
-                problem['id'] = _id
-                table[_id] = problem
+                # Change the id key name
+                problem['id'] = problem.pop('module_id')
+
+                # Add an incorrect_submissions field
+                problem['incorrect_submissions'] = problem['total_submissions'] - problem['correct_submissions']
+
+                table[problem['id']] = problem
 
                 # Set the last_updated value
                 created = problem.pop('created', None)
@@ -225,6 +229,7 @@ class CoursePerformancePresenter(BasePresenter):
             DEFAULT_DATA = {
                 'total_submissions': 0,
                 'correct_submissions': 0,
+                'incorrect_submissions': 0,
                 'part_ids': []
             }
 
@@ -271,8 +276,11 @@ class CoursePerformancePresenter(BasePresenter):
                 self._add_submissions_and_part_ids(assignment)
                 problems = assignment['problems']
                 assignment['num_problems'] = len(problems)
-                assignment['total_submissions'] = sum(problem.get('total_submissions', 0) for problem in problems)
-                assignment['correct_submissions'] = sum(problem.get('correct_submissions', 0) for problem in problems)
+                total_submissions = sum(problem.get('total_submissions', 0) for problem in problems)
+                assignment['total_submissions'] = total_submissions
+                correct_submissions = sum(problem.get('correct_submissions', 0) for problem in problems)
+                assignment['correct_submissions'] = correct_submissions
+                assignment['incorrect_submissions'] = total_submissions - correct_submissions
                 assignment['index'] = index + 1
 
             # Cache the data for the course-assignment_type combination.

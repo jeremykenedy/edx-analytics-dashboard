@@ -162,7 +162,8 @@ class CoursePerformanceGradedContentByTypeTests(CoursePerformancePageTestsMixin,
 
         # Check the column headings
         cols = table.find_elements_by_css_selector('thead tr th')
-        expected = [u'Order', u'Assignment Name', u'Problems', u'Total Submissions', u'Correct Submissions']
+        expected = [u'Order', u'Assignment Name', u'Problems', u'Total Submissions', u'Correct Submissions',
+                    u'Incorrect Submissions']
         self.assertRowTextEquals(cols, expected)
 
         # Check the row texts
@@ -177,7 +178,8 @@ class CoursePerformanceGradedContentByTypeTests(CoursePerformancePageTestsMixin,
                 assignment['name'],
                 unicode(len(assignment['children'])),
                 self.format_number(assignment['total_submissions']),
-                self.format_number(assignment['correct_submissions'])
+                self.format_number(assignment['correct_submissions']),
+                self.format_number(assignment['total_submissions'] - assignment['correct_submissions']),
             ]
             self.assertRowTextEquals(cols, expected)
 
@@ -228,7 +230,7 @@ class CoursePerformanceAssignmentTests(CoursePerformancePageTestsMixin, WebAppTe
 
         # Check the column headings
         cols = table.find_elements_by_css_selector('thead tr th')
-        expected = [u'Order', u'Problem Name', u'Total Submissions', u'Correct Submissions']
+        expected = [u'Order', u'Problem Name', u'Total Submissions', u'Correct Submissions', u'Incorrect Submissions']
         self.assertRowTextEquals(cols, expected)
 
         # Check the row texts
@@ -244,7 +246,8 @@ class CoursePerformanceAssignmentTests(CoursePerformancePageTestsMixin, WebAppTe
                 unicode(index + 1),
                 problem['name'],
                 self.format_number(problem['total_submissions']),
-                self.format_number(problem['correct_submissions'])
+                self.format_number(problem['correct_submissions']),
+                self.format_number(problem['total_submissions'] - problem['correct_submissions']),
             ]
             self.assertRowTextEquals(cols, expected)
 

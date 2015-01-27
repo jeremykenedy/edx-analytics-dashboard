@@ -5,38 +5,46 @@ require(['vendor/domReady!', 'load/init-page'], function (doc, page) {
         function (_, DataTableView, StackedBarView) {
             var tableColumns,
                 model = page.models.courseModel,
-                assignmentType = model.get('assignmentType'),
-                submissionColumns = [
-                    {
-                        key: 'total_submissions',
-                        title: gettext('Total Submissions'),
-                        className: 'text-right',
-                        type: 'number',
-                        color: '#4BB4FB'
-                    },
+                graphSubmissionColumns = [
                     {
                         key: 'correct_submissions',
                         title: gettext('Correct Submissions'),
                         className: 'text-right',
                         type: 'number',
+                        color: '#4BB4FB'
+                    },
+                    {
+                        key: 'incorrect_submissions',
+                        title: gettext('Incorrect Submissions'),
+                        className: 'text-right',
+                        type: 'number',
                         color: '#CA0061'
                     }
-                ];
+                ],
+                tableSubmissionColumns = [{
+                    key: 'total_submissions',
+                    title: gettext('Total Submissions'),
+                    className: 'text-right',
+                    type: 'number',
+                    color: '#4BB4FB'
+                }].concat(graphSubmissionColumns);
 
             new StackedBarView({
                 el: '#chart-view',
                 model: model,
                 modelAttribute: 'problems',
-                trends: submissionColumns,
+                trends: graphSubmissionColumns,
                 x: {key: 'index'},
                 y: {key: 'count'},
-                interactiveTooltipHeaderTemplate: _.template(assignmentType + ' #<%=value%>')
+                /* Translators: This string is used for a tooltip heading (e.g. Problem #4).
+                 Do NOT translate the word "value". */
+                interactiveTooltipHeaderTemplate: _.template(gettext('Problem #<%=value%>'))
             });
 
             tableColumns = [
                 {key: 'index', title: gettext('Order'), type: 'number', className: 'text-right'},
                 {key: 'name', title: gettext('Problem Name')}
-            ].concat(submissionColumns);
+            ].concat(tableSubmissionColumns);
 
             new DataTableView({
                 el: '[data-role=problem-table]',
