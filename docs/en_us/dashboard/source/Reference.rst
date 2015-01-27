@@ -380,8 +380,7 @@ For information about viewing engagement metrics in edX Insights, see
 Performance Computations
 *****************************
 
-* Student answer distribution data is available for problems of these types
-  only.
+* Student submission data is available only for problems of these types.
 
   * Checkboxes (``<choiceresponse>``)
   * Dropdown (``<optionresponse>``)
@@ -395,21 +394,20 @@ Performance Computations
 
 * Computations are updated daily. 
 
-* Problems are included on the report if students can click **Check** to
-  submit their responses. If students can only save their responses without
-  submitting them (that is, the **Maximum Attempts** for the problem is set to
-  0), data is not available for student answer distribution computations.
+* Computations for graded content include only problems for which students can
+  click **Check** to submit their responses. If students can only save their
+  responses without submitting them (that is, the **Maximum Attempts** for the
+  problem is set to 0), data is not available for student submission
+  computations.
 
-.. this can move when navigation gets added. The concept of "graded" relies on students being able to submit (click check) their work
-
-* Only problem activity that occurred after 23 October 2013 is included. In
-  addition, at least one student must have submitted an answer after 6 March
+* Only problem activity that occurred after 23 Oct 2013 is included. In
+  addition, at least one student must have submitted an answer after 6 Mar
   2014.
 
-**Answer Distribution CSV file**
+**Graded Content Submissions .csv file**
 
-The CSV file contains a superset of the data that is included in the chart and
-report. The CSV file contains the following columns.
+The .csv file contains a superset of the data that is included in the
+Submissions chart and report. The .csv file contains the following columns.
 
 .. list-table::
    :widths: 20 60
@@ -417,20 +415,20 @@ report. The CSV file contains the following columns.
 
    * - Column
      - Description
-   * - answer_value
+   * - ``answer_value``
      - The text label of the answer choice for checkboxes, dropdown, and
        multiple choice problems. The value entered by the student for text
        input, numerical input, and math expression input problems. 
 
-       For checkboxes and multiple choice problems, answer choices selected by
-       at least one student after 23 October 2013, but not selected after 6
-       March 2014, do not include an answer_value. The value_id is
-       available for these problems.
+       Answer choices selected by at least one student after 23 Oct 2013, but
+       not selected after 6 Mar 2014, do not include an answer_value for
+       checkboxes and multiple choice problems. The ``value_id`` is available
+       for these problems.
 
-   * - correct
+   * - ``correct``
      - TRUE if this answer value is correct, or FALSE if this answer value is
        incorrect.
-   * - count
+   * - ``count``
      - The number of times that students entered or selected this answer as
        their most recent submission for the problem or problem variant. 
 
@@ -438,50 +436,50 @@ report. The CSV file contains the following columns.
        problem after it is released, it might not be possible for you to 
        determine which answers were given before and after you made the change.
 
-   * - course_id
+   * - ``course_id``
      - The identifier for the course run.
-   * - created
+   * - ``created``
      - The date and time of the computation.
-   * - module_id
+   * - ``module_id``
      - The internal identifier for the problem component.
-   * - part_id
+   * - ``part_id``
      - For a problem component that contains multiple questions, the internal
-       identifier for each problem. For a problem component that
-       contains a single question, the internal identifier of that problem.
-   * - problem_display_name
+       identifier for each one. For a problem component that contains a single
+       question, the internal identifier of that problem.
+   * - ``problem_display_name``
      - The display name defined for the problem.
-   * - question_text
+   * - ``question_text``
      - The accessibility label that appears above the answer choices or
        the value entry field for the problem. In the Studio Simple Editor, this
        text is surrounded by two pairs of angle brackets (>>Question<<). Blank
        for questions that do not have an accessibility label.
 
        For problems that use randomization, if a particular answer has not 
-       been selected since 6 March 2014, the question_text is blank for 
+       been selected since 6 Mar 2014, the ``question_text`` is blank for 
        that answer.
 
-   * - value_id
+   * - ``value_id``
      - The internal identifier for the answer choice provided for checkboxes
        and multiple choice problems. Blank for dropdown, numerical input, text
        input, and math expression input problems.
-   * - variant
+   * - ``variant``
      - For problems that use the randomization setting in Studio, contains
        the unique identifier for a variant of the problem. Blank for problems
        that have this setting defined as **Never** (the default).
 
 
-After you download the CSV file, be aware that different spreadsheet
+After you download the .csv file, be aware that different spreadsheet
 applications can display the same data in different ways.
 
 * Not all spreadsheet applications interpret and render UTF-8 encoded
   characters correctly.
 
-* Some spreadsheet applications alter data for display purposes, such as zero-
-  filling numbers expressed as decimals.
+* Some spreadsheet applications alter data for display purposes, such as 
+  zero-filling numbers expressed as decimals.
 
 If you notice characters that do not display as expected, or multiple lines
-that have the same answer_value but different counts, try opening the file in a
-different spreadsheet application or a text editor.
+that have the same ``answer_value`` but different counts, try opening the file
+in a different spreadsheet application or a text editor.
 
 .. _Error Conditions:
 
@@ -498,9 +496,9 @@ every course run.
 
 In the following situations, data may not be available in edX Insights. 
 
-* EdX changed the method used to track student enrollments on 3 December 2013.
-  For courses created in Studio prior to 4 December 2013, edX Insights reports
-  enrollment activity beginning with the enrollment count on 11 November 2013.
+* EdX changed the method used to track student enrollments on 3 Dec 2013.
+  For courses created in Studio prior to 4 Dec 2013, edX Insights reports
+  enrollment activity beginning with the enrollment count on 11 Nov 2013.
 
 * For courses with a very small number of enrolled users, such as newly created
   courses, data for enrollment activity, enrollment geography, or both, may not
@@ -511,8 +509,10 @@ In the following situations, data may not be available in edX Insights.
   platform, data for enrollment activity and student engagement may not be
   available.
 
-* Charts are not available for problems with randomization enabled in Studio.
-  The Answer Distribution report and downloadable CSV file are available for
+* Charts are not available for problems that use the randomization setting in
+  Studio. Because these problems can result in numerous possible submission
+  variants, both correct and incorrect, edX Insights does not attempt to graph
+  them. The Submissions report and downloadable .csv file are available for
   these problems, and include one row for each problem-variant-answer
   combination selected by your students.
 
