@@ -34,10 +34,11 @@ require(['vendor/domReady!', 'load/init-page'], function (doc, page) {
                 el: '#chart-view',
                 model: model,
                 modelAttribute: 'assignments',
+                truncateXTicks: true,
                 trends: graphSubmissionColumns,
-                x: {key: 'index'},
+                x: {key: 'name'},
                 y: {key: 'count'},
-                interactiveTooltipHeaderTemplate: _.template(assignmentType + ' #<%=value%>')
+                interactiveTooltipHeaderTemplate: _.template(assignmentType + ': <%=value%>')
             });
 
             tableColumns = [

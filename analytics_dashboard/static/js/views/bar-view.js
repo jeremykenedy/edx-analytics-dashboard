@@ -32,6 +32,23 @@ define(['nvd3', 'underscore', 'utils/utils', 'views/chart-view'],
                 return xValue;
             },
 
+            /**
+             * Add ellipses for long labels shown beneath the bar.
+             */
+            truncateXTick: function (d) {
+                var barWidth = d3.select('.nv-bar').attr('width'),  // jshint ignore:line
+                    // this is a rough estimate of how wide a character is
+                    chartWidth = 5,
+                    characterLimit = Math.floor(barWidth / chartWidth),
+                    formattedLabel = d;
+
+                if (_(formattedLabel).size() > characterLimit) {
+                    formattedLabel = Utils.truncateText(d, characterLimit);
+                }
+
+                return formattedLabel;
+            },
+
             initChart: function(chart) {
                 var self = this;
                 ChartView.prototype.initChart.call(self, chart);

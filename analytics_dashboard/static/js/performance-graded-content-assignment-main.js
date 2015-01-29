@@ -33,12 +33,13 @@ require(['vendor/domReady!', 'load/init-page'], function (doc, page) {
                 el: '#chart-view',
                 model: model,
                 modelAttribute: 'problems',
+                truncateXTicks: true,
                 trends: graphSubmissionColumns,
-                x: {key: 'index'},
+                x: {key: 'name'},
                 y: {key: 'count'},
-                /* Translators: This string is used for a tooltip heading (e.g. Problem #4).
+                /* Translators: This string is used for a tooltip heading (e.g. Problem: What is 2+2?).
                  Do NOT translate the word "value". */
-                interactiveTooltipHeaderTemplate: _.template(gettext('Problem #<%=value%>'))
+                interactiveTooltipHeaderTemplate: _.template(gettext('Problem: <%=value%>'))
             });
 
             tableColumns = [
