@@ -11,8 +11,8 @@ import httpretty
 from mock import patch, Mock, _is_started
 
 from courses.tests import utils
+from courses.tests.factories import CoursePerformanceDataFactory
 from courses.tests.test_views import DEMO_COURSE_ID, CourseAPIMixin, NavAssertMixin, ViewTestMixin
-from courses.tests.utils import CoursePerformanceMockData
 
 
 logger = logging.getLogger(__name__)
@@ -42,14 +42,15 @@ class CoursePerformanceViewTestMixin(CourseAPIMixin, NavAssertMixin, ViewTestMix
     def setUp(self):
         super(CoursePerformanceViewTestMixin, self).setUp()
         self.toggle_switch('enable_course_api', True)
+        self.factory = CoursePerformanceDataFactory()
 
         # Ensure patches from previous test failures are removed and de-referenced
         self.clear_patches()
 
         self._patch('courses.presenters.performance.CoursePerformancePresenter.assignments',
-                    return_value=CoursePerformanceMockData.MOCK_PRESENTER_ASSIGNMENTS())
+                    return_value=self.factory.present_assignments())
         self._patch('courses.presenters.performance.CoursePerformancePresenter.grading_policy',
-                    return_value=CoursePerformanceMockData.MOCK_GRADING_POLICY)
+                    return_value=self.factory.grading_policy)
         self.start_patching()
 
     def tearDown(self):
@@ -160,8 +161,8 @@ class CoursePerformanceViewTestMixin(CourseAPIMixin, NavAssertMixin, ViewTestMix
         This is intended to be validate the context of a VALID response returned by a view under normal conditions.
         """
         expected = {
-            'assignment_types': CoursePerformanceMockData.MOCK_ASSIGNMENT_TYPES,
-            'assignments': CoursePerformanceMockData.MOCK_PRESENTER_ASSIGNMENTS()
+            'assignment_types': self.factory.assignment_types,
+            'assignments': self.factory.present_assignments()
         }
         self.assertDictContainsSubset(expected, context)
 
@@ -179,7 +180,7 @@ class CoursePerformanceAnswerDistributionViewTests(CoursePerformanceViewTestMixi
     def path(self, **kwargs):
         # Use default kwargs for tests that don't necessarily care about the specific argument values.
         default_kwargs = {
-            'assignment_id': CoursePerformanceMockData.MOCK_ASSIGNMENTS()[0]['id'],
+            'assignment_id': self.factory.assignments[0][u'id'],
             'problem_id': self.PROBLEM_ID,
             'problem_part_id': self.TEXT_PROBLEM_PART_ID
         }
@@ -204,7 +205,7 @@ class CoursePerformanceAnswerDistributionViewTests(CoursePerformanceViewTestMixi
 
     def assertViewIsValid(self, course_id, problem_id, problem_part_id):
         # Retrieve a mock assignment ID
-        assignment_id = CoursePerformanceMockData.MOCK_ASSIGNMENTS()[0]['id']
+        assignment_id = self.factory.assignments[0][u'id']
 
         # Mock the answer distribution and retrieve the view
         rv = utils.get_presenter_answer_distribution(course_id, problem_part_id)
@@ -264,8 +265,8 @@ class CoursePerformanceGradedContentViewTests(CoursePerformanceViewTestMixin, Te
         # an assignments field in the context.
 
         expected = {
-            'assignment_types': CoursePerformanceMockData.MOCK_ASSIGNMENT_TYPES,
-            'grading_policy': CoursePerformanceMockData.MOCK_GRADING_POLICY,
+            'assignment_types': self.factory.assignment_types,
+            'grading_policy': self.factory.grading_policy,
         }
         self.assertDictContainsSubset(expected, context)
 
@@ -275,7 +276,7 @@ class CoursePerformanceGradedContentByTypeViewTests(CoursePerformanceViewTestMix
 
     def setUp(self):
         super(CoursePerformanceGradedContentByTypeViewTests, self).setUp()
-        self.assignment_type = CoursePerformanceMockData.MOCK_ASSIGNMENT_TYPES[0]
+        self.assignment_type = self.factory.assignment_types[0]
 
     def path(self, **kwargs):
         # Use default kwargs for tests that don't necessarily care about the specific argument values.
@@ -314,7 +315,7 @@ class CoursePerformanceAssignmentViewTests(CoursePerformanceViewTestMixin, TestC
 
     def setUp(self):
         super(CoursePerformanceAssignmentViewTests, self).setUp()
-        self.assignment = CoursePerformanceMockData.present_assignment(CoursePerformanceMockData.HOMEWORK())
+        self.assignment = self.factory.present_assignments()[0]
         self.assignment_type = self.assignment['assignment_type']
 
     def path(self, **kwargs):

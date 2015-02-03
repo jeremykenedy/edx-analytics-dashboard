@@ -49,8 +49,8 @@ course_validation:
 	python -m acceptance_tests.course_validation.generate_report
 
 quality:
-	pep8 --config=.pep8 analytics_dashboard
-	cd analytics_dashboard && pylint --rcfile=../pylintrc $(PACKAGES)
+	pep8 --config=.pep8 analytics_dashboard common
+	cd analytics_dashboard && pylint --rcfile=../pylintrc $(PACKAGES) ../common
 
 	# Ignore module level docstrings and all test files
 	#cd analytics_dashboard && pep257 --ignore=D100,D203 --match='(?!test).*py' $(PACKAGES)

@@ -2,15 +2,16 @@ from collections import namedtuple
 import logging
 import datetime
 
-from django.core.cache import cache
 from django.conf import settings
+from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 from analyticsclient.exceptions import NotFoundError
 from edx_api_client.auth import TokenAuth
 import slumber
 
-import courses.utils as utils
+import common  # pylint: disable=import-error
 from courses.presenters import BasePresenter
+import courses.utils as utils
 
 
 logger = logging.getLogger(__name__)
@@ -221,34 +222,56 @@ class CoursePerformancePresenter(BasePresenter):
 
         return problems
 
-    def _add_submissions_and_part_ids(self, assignment):
-        key = self.get_cache_key('assignment_{}_problems'.format(assignment['id']))
-        problems = cache.get(key)
+    def _add_submissions_and_part_ids(self, assignments):
+        DEFAULT_DATA = {
+            'total_submissions': 0,
+            'correct_submissions': 0,
+            'incorrect_submissions': 0,
+            'part_ids': []
+        }
 
-        if not problems:
-            DEFAULT_DATA = {
-                'total_submissions': 0,
-                'correct_submissions': 0,
-                'incorrect_submissions': 0,
-                'part_ids': []
-            }
+        course_problems = self._course_problems()
 
+        for assignment in assignments:
             problems = assignment['problems']
-            course_problems = self._course_problems()
 
             for index, problem in enumerate(problems):
                 data = course_problems.get(problem['id'], DEFAULT_DATA)
                 data['index'] = index + 1
                 problem.update(data)
 
-            cache.set(key, problems)
+            assignment['problems'] = problems
 
-        assignment['problems'] = problems
+    def _structure(self):
+        key = self.get_cache_key('structure')
+        structure = cache.get(key)
+
+        if not structure:
+            logger.debug('Retrieving structure for course: %s', self.course_id)
+            structure = self.course_api_client(self.course_id).structure.get()
+            cache.set(key, structure)
+
+        return structure
+
+    def _filter_children(self, blocks, key, graded=True, block_type=None):
+        """
+        Given the blocks locates the nested graded or ungraded problems.
+        """
+        block = blocks[key]
+
+        if block[u'graded'] == graded and ((block_type and block_type == block[u'type']) or not block_type):
+            return [block]
+
+        children = []
+        for child in block[u'children']:
+            children += self._filter_children(blocks, child, graded, block_type)
+
+        return children
 
     def assignments(self, assignment_type=None):
         """ Returns the assignments (and problems) for the represented course. """
 
-        assignment_type_key = '{}_assignments_{}'.format(self.course_id, assignment_type)
+        assignment_type_key = self.get_cache_key('assignments_{}'.format(assignment_type))
         assignments = cache.get(assignment_type_key)
 
         if not assignments:
@@ -256,15 +279,8 @@ class CoursePerformancePresenter(BasePresenter):
             assignments = cache.get(all_assignments_key)
 
             if not assignments:
-                logger.debug('Retrieving assignments for course: %s', self.course_id)
-                assignments = self.course_api_client(self.course_id).graded_content.get(
-                    filter_children_category='problem')
-
-                # Change the key name from format (less-specific to our use case) to assignment_type (more accurate).
-                for assignment in assignments:
-                    assignment['assignment_type'] = assignment.pop('format')
-                    assignment['problems'] = assignment.pop('children')
-
+                structure = self._structure()
+                assignments = common.course_structure_to_assignments(structure, graded=True, assignment_type=None)
                 cache.set(all_assignments_key, assignments)
 
             if assignment_type:
@@ -272,13 +288,13 @@ class CoursePerformancePresenter(BasePresenter):
                 assignments = [assignment for assignment in assignments if
                                assignment['assignment_type'].lower() == assignment_type]
 
+            self._add_submissions_and_part_ids(assignments)
             for index, assignment in enumerate(assignments):
-                self._add_submissions_and_part_ids(assignment)
                 problems = assignment['problems']
-                assignment['num_problems'] = len(problems)
                 total_submissions = sum(problem.get('total_submissions', 0) for problem in problems)
-                assignment['total_submissions'] = total_submissions
                 correct_submissions = sum(problem.get('correct_submissions', 0) for problem in problems)
+                assignment['num_problems'] = len(problems)
+                assignment['total_submissions'] = total_submissions
                 assignment['correct_submissions'] = correct_submissions
                 assignment['incorrect_submissions'] = total_submissions - correct_submissions
                 assignment['index'] = index + 1

@@ -10,7 +10,7 @@ from courses.presenters.engagement import CourseEngagementPresenter
 from courses.presenters.enrollment import CourseEnrollmentPresenter, CourseEnrollmentDemographicsPresenter
 from courses.presenters.performance import CoursePerformancePresenter
 from courses.tests import utils, SwitchMixin
-from courses.tests.utils import CoursePerformanceMockData
+from courses.tests.factories import CoursePerformanceDataFactory
 
 
 class BasePresenterTests(TestCase):
@@ -252,6 +252,7 @@ class CoursePerformancePresenterTests(TestCase):
         self.course_id = 'edX/DemoX/Demo_Course'
         self.problem_id = 'i4x://edX/DemoX.1/problem/05d289c5ad3d47d48a77622c4a81ec36'
         self.presenter = CoursePerformancePresenter(self.course_id)
+        self.factory = CoursePerformanceDataFactory()
 
     @mock.patch('analyticsclient.module.Module.answer_distribution')
     def test_multiple_answer_distribution(self, mock_answer_distribution):
@@ -331,78 +332,51 @@ class CoursePerformancePresenterTests(TestCase):
                 self.assertListEqual(answer_distribution_entry.answer_distribution_limited,
                                      expected_answer_distribution[:12])
 
-    @mock.patch('slumber.Resource.get', mock.Mock(return_value=CoursePerformanceMockData.MOCK_GRADING_POLICY))
+    @mock.patch('slumber.Resource.get', mock.Mock(return_value=CoursePerformanceDataFactory.grading_policy))
     def test_grading_policy(self):
         """ Verify the presenter returns the correct grading policy. """
-        self.assertListEqual(self.presenter.grading_policy(), CoursePerformanceMockData.MOCK_GRADING_POLICY)
+        self.assertListEqual(self.presenter.grading_policy(), CoursePerformanceDataFactory.grading_policy)
 
     @mock.patch('courses.presenters.performance.CoursePerformancePresenter.grading_policy',
-                mock.Mock(return_value=CoursePerformanceMockData.MOCK_GRADING_POLICY))
+                mock.Mock(return_value=CoursePerformanceDataFactory.grading_policy))
     def test_assignment_types(self):
         """ Verify the presenter returns the correct assignment types. """
-        self.assertListEqual(self.presenter.assignment_types(), CoursePerformanceMockData.MOCK_ASSIGNMENT_TYPES)
+        self.assertListEqual(self.presenter.assignment_types(), CoursePerformanceDataFactory.assignment_types)
 
-    def _get_expected_assignments(self, assignment_type=None):
-        assignments = CoursePerformanceMockData.MOCK_ASSIGNMENTS()
-
-        # Filter by assignment type
-        if assignment_type:
-            assignment_type = assignment_type.lower()
-            assignments = [assignment for assignment in assignments if
-                           assignment['format'].lower() == assignment_type]
-
-        # Add metadata and submission counts
-        for index, assignment in enumerate(assignments):
-            # Use a more descriptive key name
-            assignment = CoursePerformanceMockData.present_assignment(assignment)
-
-            problems = assignment['problems']
-            num_problems = len(problems)
-            for i, problem in enumerate(problems):
-                problem.update({
-                    'index': i + 1,
-                    'total_submissions': i,
-                    'correct_submissions': i,
-                    'incorrect_submissions': 0,
-                    'part_ids': ["{}_1_2".format(problem["id"])]
-                })
-
-            assignment['num_problems'] = num_problems
-            assignment['total_submissions'] = sum(problem.get('total_submissions', 0) for problem in problems)
-            assignment['correct_submissions'] = sum(problem.get('correct_submissions', 0) for problem in problems)
-            assignment['incorrect_submissions'] = 0
-            assignment['index'] = index + 1
-
-        return assignments
-
-    @mock.patch('slumber.Resource.get', mock.Mock(side_effect=CoursePerformanceMockData.MOCK_ASSIGNMENTS))
     def test_assignments(self):
         """ Verify the presenter returns the correct assignments and sets the last updated date. """
 
         self.assertIsNone(self.presenter.last_updated)
 
-        with mock.patch('analyticsclient.course.Course.problems', CoursePerformanceMockData.problems):
-            # With no assignment type set, the method should return all assignment types.
-            assignments = self.presenter.assignments()
-            expected_assignments = self._get_expected_assignments()
-            self.assertListEqual(assignments, expected_assignments)
-            self.assertEqual(self.presenter.last_updated, utils.CREATED_DATETIME)
+        with mock.patch('slumber.Resource.get', mock.Mock(return_value=self.factory.structure)):
+            with mock.patch('analyticsclient.course.Course.problems', self.factory.problems):
+                # With no assignment type set, the method should return all assignment types.
+                assignments = self.presenter.assignments()
+                expected_assignments = self.factory.present_assignments()
 
-            # With an assignment type set, the presenter should return only the assignments of the specified type.
-            for assignment_type in CoursePerformanceMockData.MOCK_ASSIGNMENT_TYPES:
-                cache.clear()
-                self.assertListEqual(self.presenter.assignments(assignment_type),
-                                     self._get_expected_assignments(assignment_type))
+                self.assertListEqual(assignments, expected_assignments)
+                self.assertEqual(self.presenter.last_updated, utils.CREATED_DATETIME)
 
-    @mock.patch('courses.presenters.performance.CoursePerformancePresenter.assignments',
-                mock.Mock(return_value=CoursePerformanceMockData.MOCK_PRESENTER_ASSIGNMENTS()))
+                # With an assignment type set, the presenter should return only the assignments of the specified type.
+                self.maxDiff = None
+                for assignment_type in self.factory.assignment_types:
+                    cache.clear()
+                    expected = [assignment for assignment in expected_assignments if
+                                assignment[u'assignment_type'] == assignment_type]
+
+                    for index, assignment in enumerate(expected):
+                        assignment[u'index'] = index + 1
+
+                    self.assertListEqual(self.presenter.assignments(assignment_type), expected)
+
     def test_assignment(self):
         """ Verify the presenter returns a specific assignment. """
+        with mock.patch('courses.presenters.performance.CoursePerformancePresenter.assignments',
+                        mock.Mock(return_value=self.factory.present_assignments())):
+            # The method should return None if the assignment does not exist.
+            self.assertIsNone(self.presenter.assignment(None))
+            self.assertIsNone(self.presenter.assignment('non-existent-id'))
 
-        # The method should return None if the assignment does not exist.
-        self.assertIsNone(self.presenter.assignment(None))
-        self.assertIsNone(self.presenter.assignment('non-existent-id'))
-
-        # The method should return an individual assignment if the ID exists.
-        homework = CoursePerformanceMockData.present_assignment(CoursePerformanceMockData.HOMEWORK())
-        self.assertDictEqual(self.presenter.assignment(homework['id']), homework)
+            # The method should return an individual assignment if the ID exists.
+            assignment = self.factory.present_assignments()[0]
+            self.assertDictEqual(self.presenter.assignment(assignment[u'id']), assignment)

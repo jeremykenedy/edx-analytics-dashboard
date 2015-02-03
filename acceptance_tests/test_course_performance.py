@@ -5,6 +5,7 @@ from unittest import skipUnless
 from bok_choy.web_app_test import WebAppTest
 
 from acceptance_tests import ENABLE_COURSE_API
+import common
 from mixins import CoursePageTestsMixin
 from pages import CoursePerformanceGradedContentPage, CoursePerformanceAnswerDistributionPage, \
     CoursePerformanceGradedContentByTypePage, CoursePerformanceAssignmentPage
@@ -14,9 +15,6 @@ _multiprocess_can_split_ = True
 
 
 class CoursePerformancePageTestsMixin(CoursePageTestsMixin):
-    def _get_data_update_message(self):
-        pass
-
     def test_page(self):
         super(CoursePerformancePageTestsMixin, self).test_page()
         self._test_chart()
@@ -29,6 +27,70 @@ class CoursePerformancePageTestsMixin(CoursePageTestsMixin):
 
     def _test_table(self):
         raise NotImplementedError
+
+    def _filter_children(self, blocks, key, **kwargs):
+        """
+        Given the blocks locates the nested graded or ungraded problems.
+        """
+        block = blocks[key]
+
+        block_type = kwargs.pop(u'block_type', None)
+        if block_type in kwargs:
+            kwargs[u'type'] = block_type
+
+        kwargs.setdefault(u'graded', False)
+
+        matched = True
+        for name, value in kwargs.iteritems():
+            matched &= (block.get(name, None) == value)
+            if not matched:
+                break
+
+        if matched:
+            return [block]
+
+        children = []
+        for child in block[u'children']:
+            children += self._filter_children(blocks, child, **kwargs)
+
+        return children
+
+    def _get_assignments(self, assignment_type=None):
+        structure = self.course_api_client(self.page.course_id).structure.get()
+        assignments = common.course_structure_to_assignments(structure, graded=True, assignment_type=assignment_type)
+
+        # Retrieve the submissions from the Analytics Data API and create a lookup table.
+        problems = self.course.problems()
+        problems = dict((problem['module_id'], problem) for problem in problems)
+
+        # Sum the submission counts
+        for assignment in assignments:
+            total = 0
+            correct = 0
+
+            for problem in assignment['problems']:
+                submission_entry = problems.get(problem['id'], None)
+                if submission_entry:
+                    total += submission_entry['total_submissions']
+                    correct += submission_entry['correct_submissions']
+
+                    problem['total_submissions'] = submission_entry['total_submissions']
+                    problem['correct_submissions'] = submission_entry['correct_submissions']
+
+            assignment['total_submissions'] = total
+            assignment['correct_submissions'] = correct
+
+        return assignments
+
+    def _get_data_update_message(self):
+        problems = self.course.problems()
+        last_updated = datetime.datetime.min
+
+        for problem in problems:
+            last_updated = max(last_updated, datetime.datetime.strptime(problem['created'], self.api_datetime_format))
+
+        return 'Answer distribution data was last updated %(update_date)s at %(update_time)s UTC.' % \
+               self.format_last_updated_date_and_time(last_updated)
 
 
 @skipUnless(ENABLE_COURSE_API, 'Course API must be enabled to test the graded content page.')
@@ -56,7 +118,6 @@ class CoursePerformanceGradedContentTests(CoursePerformancePageTestsMixin, WebAp
     def setUp(self):
         super(CoursePerformanceGradedContentTests, self).setUp()
         self.page = CoursePerformanceGradedContentPage(self.browser)
-        self.course = self.analytics_api_client.courses(self.page.course_id)
         self.grading_policy = self._get_grading_policy()
 
     def _test_chart(self):
@@ -121,41 +182,12 @@ class CoursePerformanceGradedContentByTypeTests(CoursePerformancePageTestsMixin,
     Tests for the course assignment type detail page.
     """
 
-    def _test_data_update_message(self):
-        # There is no data update message displayed on this page.
-        pass
-
-    def _get_assignments(self):
-        assignments = self.course_api_client(self.page.course_id).graded_content.get(
-            filter_children_category='problem')
-        assignments = [assignment for assignment in assignments if assignment['format'] == self.assignment_type]
-
-        # Retrieve the submissions from the Analytics Data API and create a lookup table.
-        problems = self.course.problems()
-        problems = dict((problem['module_id'], problem) for problem in problems)
-
-        # Sum the submission counts
-        for assignment in assignments:
-            total = 0
-            correct = 0
-
-            for problem in assignment['children']:
-                submission_entry = problems.get(problem['id'], None)
-                if submission_entry:
-                    total += submission_entry['total_submissions']
-                    correct += submission_entry['correct_submissions']
-
-            assignment['total_submissions'] = total
-            assignment['correct_submissions'] = correct
-
-        return assignments
-
     def setUp(self):
         super(CoursePerformanceGradedContentByTypeTests, self).setUp()
         self.page = CoursePerformanceGradedContentByTypePage(self.browser)
         self.assignment_type = self.page.assignment_type
         self.course = self.analytics_api_client.courses(self.page.course_id)
-        self.assignments = self._get_assignments()
+        self.assignments = self._get_assignments(self.assignment_type)
 
     def _test_table(self):
         table = self.page.browser.find_element_by_css_selector('.section-data-table table')
@@ -176,7 +208,7 @@ class CoursePerformanceGradedContentByTypeTests(CoursePerformancePageTestsMixin,
             expected = [
                 unicode(index + 1),
                 assignment['name'],
-                unicode(len(assignment['children'])),
+                unicode(len(assignment['problems'])),
                 self.format_number(assignment['total_submissions']),
                 self.format_number(assignment['correct_submissions']),
                 self.format_number(assignment['total_submissions'] - assignment['correct_submissions']),
@@ -190,33 +222,13 @@ class CoursePerformanceAssignmentTests(CoursePerformancePageTestsMixin, WebAppTe
     Tests for the course assignment detail page.
     """
 
-    def _test_data_update_message(self):
-        # There is no data update message displayed on this page.
-        pass
-
     def _get_assignment(self):
-        assignments = self.course_api_client(self.page.course_id).graded_content.get(
-            filter_children_category='problem')
-        assignment = [assignment for assignment in assignments if assignment['id'] == self.assignment_id][0]
+        assignments = self._get_assignments()
+        for assignment in assignments:
+            if assignment[u'id'] == self.assignment_id:
+                return assignment
 
-        # Retrieve the submissions from the Analytics Data API and create a lookup table.
-        problems = self.course.problems()
-        problems = dict((problem['module_id'], problem) for problem in problems)
-
-        # Sum the submission counts
-        for child in assignment['children']:
-            total = 0
-            correct = 0
-
-            submission_entry = problems.get(child['id'], None)
-            if submission_entry:
-                total += submission_entry['total_submissions']
-                correct += submission_entry['correct_submissions']
-
-            child['total_submissions'] = total
-            child['correct_submissions'] = correct
-
-        return assignment
+        raise AttributeError('Assignment not found!')
 
     def setUp(self):
         super(CoursePerformanceAssignmentTests, self).setUp()
@@ -235,7 +247,7 @@ class CoursePerformanceAssignmentTests(CoursePerformancePageTestsMixin, WebAppTe
 
         # Check the row texts
         rows = table.find_elements_by_css_selector('tbody tr')
-        problems = self.assignment['children']
+        problems = self.assignment['problems']
         self.assertEqual(len(rows), len(problems))
 
         for index, row in enumerate(rows):
@@ -263,16 +275,11 @@ class CoursePerformanceAnswerDistributionTests(CoursePerformancePageTestsMixin, 
     def setUp(self):
         super(CoursePerformanceAnswerDistributionTests, self).setUp()
         self.page = CoursePerformanceAnswerDistributionPage(self.browser)
+        self.course = self.analytics_api_client.courses(self.page.course_id)
         self.module = self.analytics_api_client.modules(self.page.course_id, self.page.problem_id)
         api_response = self.module.answer_distribution()
         data = [i for i in api_response if i['part_id'] == self.page.part_id]
         self.answer_distribution = sorted(data, key=lambda a: a['count'], reverse=True)
-
-    def _get_data_update_message(self):
-        current_data = self.answer_distribution[0]
-        last_updated = datetime.datetime.strptime(current_data['created'], self.api_datetime_format)
-        return 'Answer distribution data was last updated %(update_date)s at %(update_time)s UTC.' % \
-               self.format_last_updated_date_and_time(last_updated)
 
     def test_page(self):
         super(CoursePerformanceAnswerDistributionTests, self).test_page()
