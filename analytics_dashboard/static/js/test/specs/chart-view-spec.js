@@ -82,4 +82,70 @@ define(['models/course-model', 'views/chart-view'], function(CourseModel, ChartV
         });
 
     });
+
+    describe('Chart view', function () {
+        it('should build x label mappings', function () {
+            var model = new CourseModel(),
+                view = new ChartView({
+                    model: model,
+                    el: document.createElement('div'),
+                    modelAttribute: 'assignments',
+                    trends: [
+                        {
+                            key: 'correct_submissions',
+                            title: 'Correct Submissions',
+                            color: '#4BB4FB'
+                        },
+                        {
+                            key: 'incorrect_submissions',
+                            title: 'Incorrect Submissions',
+                            color: '#CA0061'
+                        }
+                    ],
+                    x: {key: 'id', displayKey: 'name'},
+                    y: {key: 'count'}
+                }),
+                mapping;
+
+            view.render = jasmine.createSpy('render');
+            expect(view.render).not.toHaveBeenCalled();
+
+            // mock getChart (otherwise, an error is thrown)
+            view.getChart = jasmine.createSpy('getChart');
+
+            // phantomjs doesn't have the bind method on function object
+            // (see https://github.com/novus/nvd3/issues/367) and nvd3 will
+            // throw an error when it tries to render (when trend data is set).
+            try {
+                model.set('assignments', [
+                    {
+                        id: 'assignment_1',
+                        name: 'Assignment 1',
+                        correct_submissions: 100,
+                        incorrect_submissions: 200
+                    },
+                    {
+                        id: 'assignment_2',
+                        name: 'Assignment 2',
+                        correct_submissions: 100,
+                        incorrect_submissions: 200
+                    }
+                ]);
+            } catch (e) {
+                if (e.name !== 'TypeError') {
+                    throw e;
+                }
+            }
+
+            // check the data passed to nvd3
+            mapping = view.buildXLabelMapping();
+
+            expect(mapping.assignment_1).toBe('Assignment 1');
+            expect(view.formatXTick('assignment_1')).toBe('Assignment 1');
+
+            expect(mapping.assignment_2).toBe('Assignment 2');
+            expect(view.formatXTick('assignment_2')).toBe('Assignment 2');
+        });
+
+    });
 });

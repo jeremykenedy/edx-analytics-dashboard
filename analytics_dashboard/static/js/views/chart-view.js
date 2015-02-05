@@ -65,8 +65,27 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                 return combinedTrends;
             },
 
+            /**
+             * If option x.displayKey is provided, build a mapping from the key
+             * to the display name.  E.g.: x: {key: 'id', displayKey: 'name'}.
+             * This can be useful if the dataset has unique identifiers that
+             * aren't display friendly.
+             */
+            buildXLabelMapping: function () {
+                var self = this,
+                    data = self.model.get(self.options.modelAttribute),
+                    mapping;
+
+                if (_(self.options.x).has('displayKey')) {
+                    mapping = _.object(_(data).pluck(self.options.x.key), _(data).pluck(self.options.x.displayKey));
+                }
+
+                return mapping;
+            },
+
             styleChart: function () {
-                var canvas = d3.select(this.el),
+                var self = this,
+                    canvas = d3.select(self.el),
                 // ex. translate(200, 200) or translate(200 200)
                     translateRegex = /translate\((\d+)[,\s]\s*(\d+)\)/g,
                     xAxisMargin = this.options.xAxisMargin,
@@ -95,9 +114,9 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                 axisEl.attr('transform', 'translate(' + matches[1] + ',' +
                     (parseInt(matches[2], 10) + xAxisMargin) + ')');
 
-                if (this.options.graphShiftSelector) {
+                if (self.options.graphShiftSelector) {
                     // Shift the graph down so that it sits flush with the X-axis
-                    canvas.select(this.options.graphShiftSelector)
+                    canvas.select(self.options.graphShiftSelector)
                         .attr('transform', 'translate(' + [0, xAxisMargin].join(',') + ')');
                 }
             },
@@ -116,7 +135,12 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
              * @param d Data along the x-axis to format.
              */
             formatXTick: function (d) {
-                return d;
+                var self = this,
+                    label = d;
+                if (_(self).has('xLabelMapping') && _(self.xLabelMapping).has(d)) {
+                    label = self.xLabelMapping[d];
+                }
+                return label;
             },
 
             /**
@@ -202,8 +226,10 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                 AttributeListenerView.prototype.render.call(this);
                 var self = this,
                     canvas = d3.select(self.el),
-                    assembledData = self.assembleTrendData();
+                    assembledData = self.assembleTrendData(),
+                    xLabelMapping = self.buildXLabelMapping();
 
+                self.xLabelMapping = xLabelMapping;
                 self.chart = self.getChart();
                 self.initChart(self.chart);
 
@@ -218,7 +244,7 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                     }
                 }
 
-                self.chart.xAxis.tickFormat(self.options.truncateXTicks ? self.truncateXTick: self.formatXTick);
+                self.chart.xAxis.tickFormat(self.options.truncateXTicks ? self.truncateXTickFunc() : self.formatXTick);
 
                 self.chart.yAxis
                     .showMaxMin(false)

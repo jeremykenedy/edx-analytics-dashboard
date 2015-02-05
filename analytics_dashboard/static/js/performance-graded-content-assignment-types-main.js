@@ -36,7 +36,7 @@ require(['vendor/domReady!', 'load/init-page'], function (doc, page) {
                 modelAttribute: 'assignments',
                 truncateXTicks: true,
                 trends: graphSubmissionColumns,
-                x: {key: 'name'},
+                x: {key: 'id', displayKey: 'name'},
                 y: {key: 'count'},
                 interactiveTooltipHeaderTemplate: _.template(assignmentType + ': <%=value%>')
             });

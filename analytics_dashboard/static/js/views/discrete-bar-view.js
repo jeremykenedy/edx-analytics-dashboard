@@ -20,12 +20,6 @@ define(['d3', 'nvd3', 'underscore', 'utils/utils', 'views/bar-view'],
                 return _(xValue).isNull() ? gettext('(empty)') : xValue;
             },
 
-            parseXData: function (d) {
-                var self = this,
-                    value = BarView.prototype.parseXData.call(self, d);
-                return self.formatXValue(value);
-            },
-
             getChart: function () {
                 return nvd3.models.discreteBarChart();
             },

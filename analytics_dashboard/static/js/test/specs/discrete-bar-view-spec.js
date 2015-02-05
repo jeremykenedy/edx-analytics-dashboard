@@ -48,7 +48,10 @@ define(['models/course-model', 'views/discrete-bar-view'], function(CourseModel,
             expect(view.getChart).toHaveBeenCalled();
 
             expect(view.parseXData(data[0])).toBe('Cloudy');
-            expect(view.parseXData(data[1])).toBe('(empty)');
+            expect(view.formatXValue(data[0].category)).toBe('Cloudy');
+
+            expect(view.parseXData(data[1])).toBe(null);
+            expect(view.formatXValue(data[1].category)).toBe('(empty)');
 
             assembledData = view.assembleTrendData();
             expect(assembledData.length).toBe(1);

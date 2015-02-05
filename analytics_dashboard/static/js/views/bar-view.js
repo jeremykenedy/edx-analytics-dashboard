@@ -24,6 +24,8 @@ define(['nvd3', 'underscore', 'utils/utils', 'views/chart-view'],
                     trend = self.options.trends[0],
                     maxNumber = trend.maxNumber;
 
+                xValue = ChartView.prototype.formatXTick.call(self, xValue);
+
                 if (!_(maxNumber).isUndefined()) {
                     // e.g. 100+
                     xValue = xValue >= maxNumber ? maxNumber + '+' : xValue;
@@ -33,20 +35,27 @@ define(['nvd3', 'underscore', 'utils/utils', 'views/chart-view'],
             },
 
             /**
-             * Add ellipses for long labels shown beneath the bar.
+             * Returns function for displaying a truncated label.
              */
-            truncateXTick: function (d) {
-                var barWidth = d3.select('.nv-bar').attr('width'),  // jshint ignore:line
+            truncateXTickFunc: function () {
+                var self = this;
+
+                return function (d) {
+
+                    d = self.formatXValue(d);
+
+                    var barWidth = d3.select('.nv-bar').attr('width'),  // jshint ignore:line
                     // this is a rough estimate of how wide a character is
-                    chartWidth = 5,
-                    characterLimit = Math.floor(barWidth / chartWidth),
-                    formattedLabel = d;
+                        chartWidth = 5,
+                        characterLimit = Math.floor(barWidth / chartWidth),
+                        formattedLabel = d;
 
-                if (_(formattedLabel).size() > characterLimit) {
-                    formattedLabel = Utils.truncateText(d, characterLimit);
-                }
+                    if (_(formattedLabel).size() > characterLimit) {
+                        formattedLabel = Utils.truncateText(d, characterLimit);
+                    }
 
-                return formattedLabel;
+                    return formattedLabel;
+                };
             },
 
             initChart: function(chart) {
