@@ -10,7 +10,8 @@
 
 {% block child_content %}
   <section class="view-section">
-    {% include "courses/_graded_content_nav.html" with active="assignments" assignment_types=assignment_types assignments=assignments problems=assignment.problems %}
+    {% captureas heading_note %}{% trans "How are students doing on this assignment?" %}{% endcaptureas %}
+    {% include "courses/_graded_content_nav.html" with active="assignments" heading_note=heading_note assignment_name=assignment_name assignment_types=assignment_types heading_note=heading_note assignments=assignments problems=assignment.problems %}
 
     <div class="section-content section-data-graph">
       <div class="section-content section-data-viz">

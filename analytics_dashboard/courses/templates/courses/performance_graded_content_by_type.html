@@ -10,6 +10,11 @@
 
 {% block child_content %}
   <section class="view-section">
+    {% captureas heading_note %}
+      {% blocktrans %}
+        How are students doing on the {{assignment_type}}?
+      {% endblocktrans %}
+    {% endcaptureas %}
     {% include "courses/_graded_content_nav.html" with active="assignment_type" assignment_type=assignment_type assignment_types=assignment_types assignments=assignments %}
 
     <div class="section-content section-data-graph">

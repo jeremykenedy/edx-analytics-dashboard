@@ -57,6 +57,7 @@ class PerformanceTemplateView(CourseTemplateWithNavView, CourseAPIMixin):
             assignment = self.presenter.assignment(self.assignment_id)
             if assignment:
                 context['assignment'] = assignment
+                context['assignment_name'] = assignment['name']
                 self.assignment = assignment
                 self.assignment_type = assignment['assignment_type']
             else:
