@@ -20,7 +20,7 @@ from waffle import switch_is_active
 from analyticsclient.client import Client
 from analyticsclient.exceptions import NotFoundError, ClientError
 
-from common import BearerAuth   # pylint: disable=import-error
+from common import BearerAuth
 from courses import permissions
 from courses.serializers import LazyEncoder
 from courses.utils import is_feature_enabled

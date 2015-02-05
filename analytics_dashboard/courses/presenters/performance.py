@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from analyticsclient.exceptions import NotFoundError
 import slumber
 
-import common  # pylint: disable=import-error
+import common
 from courses.presenters import BasePresenter
 import courses.utils as utils
 

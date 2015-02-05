@@ -28,14 +28,14 @@ test.acceptance: develop
 	pip install -q -r edx-analytics-data-api/requirements/base.txt
 
 migrate:
-	cd analytics_dashboard && ./manage.py migrate
+	./analytics_dashboard/manage.py migrate
 
 clean:
 	find . -name '*.pyc' -delete
 	coverage erase
 
 test_python: clean
-	cd analytics_dashboard && ./manage.py test --settings=analytics_dashboard.settings.test --with-ignore-docstrings \
+	./analytics_dashboard/manage.py test --settings=analytics_dashboard.settings.test --with-ignore-docstrings \
 		--exclude-dir=analytics_dashboard/settings --exclude-dir=analytics_dashboard/migrations --with-coverage \
 		--cover-inclusive --cover-branches --cover-html --cover-html-dir=$(COVERAGE)/html/ \
 		--cover-xml --cover-xml-file=$(COVERAGE)/coverage.xml \
@@ -50,7 +50,7 @@ course_validation:
 
 quality:
 	pep8 --config=.pep8 analytics_dashboard common
-	cd analytics_dashboard && pylint --rcfile=../pylintrc $(PACKAGES) ../common
+	cd analytics_dashboard && PYTHONPATH="..:$PYTHONPATH" pylint --rcfile=../pylintrc $(PACKAGES) common
 
 	# Ignore module level docstrings and all test files
 	#cd analytics_dashboard && pep257 --ignore=D100,D203 --match='(?!test).*py' $(PACKAGES)
@@ -65,8 +65,8 @@ validate_js: requirements.js
 validate: validate_python validate_js
 
 demo:
-	cd analytics_dashboard && ./manage.py switch show_engagement_forum_activity on --create
-	cd analytics_dashboard && ./manage.py switch display_verified_enrollment on --create
+	./analytics_dashboard/manage.py switch show_engagement_forum_activity on --create
+	./analytics_dashboard/manage.py switch display_verified_enrollment on --create
 
 compile_translations:
 	cd analytics_dashboard && i18n_tool generate -v
@@ -86,5 +86,5 @@ update_translations: pull_translations generate_fake_translations
 
 static:
 	$(NODE_BIN)/r.js -o build.js
-	cd analytics_dashboard && ./manage.py collectstatic --noinput
-	cd analytics_dashboard && ./manage.py compress
+	./analytics_dashboard/manage.py collectstatic --noinput
+	./analytics_dashboard/manage.py compress
