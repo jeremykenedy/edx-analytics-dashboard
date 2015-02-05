@@ -49,7 +49,7 @@ class PerformanceTemplateView(CourseTemplateWithNavView, CourseAPIMixin):
 
     def get_context_data(self, **kwargs):
         context = super(PerformanceTemplateView, self).get_context_data(**kwargs)
-        self.presenter = CoursePerformancePresenter(self.course_id)
+        self.presenter = CoursePerformancePresenter(self.access_token, self.course_id)
 
         context['assignment_types'] = self.presenter.assignment_types()
 
@@ -85,7 +85,7 @@ class PerformanceAnswerDistributionView(PerformanceTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(PerformanceAnswerDistributionView, self).get_context_data(**kwargs)
-        presenter = CoursePerformancePresenter(self.course_id)
+        presenter = self.presenter
 
         problem_id = self.kwargs['problem_id']
         part_id = self.kwargs['problem_part_id']

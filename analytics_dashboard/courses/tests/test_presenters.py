@@ -251,7 +251,7 @@ class CoursePerformancePresenterTests(TestCase):
         cache.clear()
         self.course_id = 'edX/DemoX/Demo_Course'
         self.problem_id = 'i4x://edX/DemoX.1/problem/05d289c5ad3d47d48a77622c4a81ec36'
-        self.presenter = CoursePerformancePresenter(self.course_id)
+        self.presenter = CoursePerformancePresenter(None, self.course_id)
         self.factory = CoursePerformanceDataFactory()
 
     @mock.patch('analyticsclient.module.Module.answer_distribution')

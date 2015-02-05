@@ -4,12 +4,12 @@ from unittest import skip
 
 from bok_choy.promise import EmptyPromise
 from analyticsclient.client import Client
-from edx_api_client.auth import TokenAuth
 import slumber
 
 from acceptance_tests import API_SERVER_URL, API_AUTH_TOKEN, DASHBOARD_FEEDBACK_EMAIL, SUPPORT_URL, LMS_USERNAME, \
     LMS_PASSWORD, DASHBOARD_SERVER_URL, ENABLE_AUTO_AUTH, DOC_BASE_URL, COURSE_API_URL, COURSE_API_KEY, \
     ENABLE_COURSE_API
+from common import BearerAuth
 from pages import LMSLoginPage
 
 
@@ -34,7 +34,7 @@ class CourseApiMixin(object):
         super(CourseApiMixin, self).setUp()
 
         if ENABLE_COURSE_API:
-            self.course_api_client = slumber.API(COURSE_API_URL, auth=TokenAuth(COURSE_API_KEY)).v0.courses
+            self.course_api_client = slumber.API(COURSE_API_URL, auth=BearerAuth(COURSE_API_KEY)).v0.courses
 
     def get_course_name_or_id(self, course_id):
         """ Returns the course name if the course API is enabled; otherwise, the course ID. """

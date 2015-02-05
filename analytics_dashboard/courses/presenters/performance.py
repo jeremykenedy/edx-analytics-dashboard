@@ -6,7 +6,6 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _
 from analyticsclient.exceptions import NotFoundError
-from edx_api_client.auth import TokenAuth
 import slumber
 
 import common  # pylint: disable=import-error
@@ -38,10 +37,10 @@ class CoursePerformancePresenter(BasePresenter):
     # limit for the number of bars to display in the answer distribution chart
     CHART_LIMIT = 12
 
-    def __init__(self, course_id, timeout=10):
+    def __init__(self, access_token, course_id, timeout=10):
         super(CoursePerformancePresenter, self).__init__(course_id, timeout)
         self.course_api_client = slumber.API(settings.COURSE_API_URL,
-                                             auth=TokenAuth(settings.COURSE_API_KEY)).v0.courses
+                                             auth=common.BearerAuth(access_token)).v0.courses
 
     def get_answer_distribution(self, problem_id, problem_part_id):
         """

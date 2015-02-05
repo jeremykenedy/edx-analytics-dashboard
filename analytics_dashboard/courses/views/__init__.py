@@ -19,8 +19,8 @@ from slumber.exceptions import HttpClientError
 from waffle import switch_is_active
 from analyticsclient.client import Client
 from analyticsclient.exceptions import NotFoundError, ClientError
-from edx_api_client.auth import TokenAuth
 
+from common import BearerAuth   # pylint: disable=import-error
 from courses import permissions
 from courses.serializers import LazyEncoder
 from courses.utils import is_feature_enabled
@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 class CourseAPIMixin(object):
+    access_token = None
     course_api_enabled = False
     course_api = None
     course_id = None
@@ -47,8 +48,9 @@ class CourseAPIMixin(object):
     def dispatch(self, request, *args, **kwargs):
         self.course_api_enabled = switch_is_active('enable_course_api')
 
-        if self.course_api_enabled:
-            self.course_api = slumber.API(settings.COURSE_API_URL, auth=TokenAuth(settings.COURSE_API_KEY)).v0.courses
+        if self.course_api_enabled and request.user.is_authenticated():
+            self.access_token = request.user.access_token
+            self.course_api = slumber.API(settings.COURSE_API_URL, auth=BearerAuth(self.access_token)).v0.courses
 
         return super(CourseAPIMixin, self).dispatch(request, *args, **kwargs)
 

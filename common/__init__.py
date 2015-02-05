@@ -1,3 +1,6 @@
+from requests.auth import AuthBase
+
+
 def _filter_children(blocks, key, **kwargs):
     """
     Given the blocks locates the nested graded or ungraded problems.
@@ -66,3 +69,16 @@ def course_structure_to_assignments(structure, graded=None, assignment_type=None
         })
 
     return assignments
+
+
+class BearerAuth(AuthBase):
+    """ Attaches Bearer Authentication to the given Request object. """
+
+    def __init__(self, token):
+        """ Instantiate the auth class. """
+        self.token = token
+
+    def __call__(self, r):
+        """ Update the request headers. """
+        r.headers['Authorization'] = 'Bearer {0}'.format(self.token)
+        return r
