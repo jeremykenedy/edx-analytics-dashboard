@@ -253,21 +253,6 @@ class CoursePerformancePresenter(BasePresenter):
 
         return structure
 
-    def _filter_children(self, blocks, key, graded=True, block_type=None):
-        """
-        Given the blocks locates the nested graded or ungraded problems.
-        """
-        block = blocks[key]
-
-        if block[u'graded'] == graded and ((block_type and block_type == block[u'type']) or not block_type):
-            return [block]
-
-        children = []
-        for child in block[u'children']:
-            children += self._filter_children(blocks, child, graded, block_type)
-
-        return children
-
     def assignments(self, assignment_type=None):
         """ Returns the assignments (and problems) for the represented course. """
 
