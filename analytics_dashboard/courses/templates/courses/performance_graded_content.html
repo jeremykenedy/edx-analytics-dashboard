@@ -4,7 +4,7 @@
 
 {% block child_content %}
   <section class="view-section">
-    {% trans "How are students doing on course assignments?" as heading_note %}
+    {% trans "Which assignment type do you want to investigate?" as heading_note %}
     {% include "courses/_graded_content_nav.html" with active="assignment_type" assignment_types=assignment_types heading_note=heading_note %}
     <div class="section-content section-data-table grading-policy">
       <div class="tooltip-container">
@@ -23,34 +23,6 @@
           </div>
         {% endfor %}
       </div>
-    </div>
-  </section>
-
-  <section class="view-section">
-    <div class="section-heading">
-      <h4 class="section-title">{% trans "Grading Configuration" %}</h4>
-    </div>
-    <div class="section-content section-data-table grading-configuration">
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>{% trans "Assignment Type" %}</th>
-          <th class="text-right">{% trans "Grade Percentage" %}</th>
-          <th class="text-right">{% trans "Number of Assignments" %}</th>
-          <th class="text-right">{% trans "Dropped Scores" %}</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for item in grading_policy %}
-          <tr>
-            <td>{{ item.assignment_type }}</td>
-            <td class="text-right">{% widthratio item.weight 1 100 %}%</td>
-            <td class="text-right">{{ item.count }}</td>
-            <td class="text-right">{{ item.dropped }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
     </div>
   </section>
 {% endblock %}
