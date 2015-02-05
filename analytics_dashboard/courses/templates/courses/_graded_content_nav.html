@@ -8,14 +8,19 @@
         <li class="{% if active == "assignment_type" %}active{% endif %} nav-section">
           <div class="dropdown">
               <span class="link-label dropdown-toggle" id="assignmentTypeMenu" data-toggle="dropdown">
-                {% trans "Assignment Types" %}
+                {% if assignment_type %}
+                  {{assignment_type}}
+                {% else %}
+                  {% trans "Select Assignment Type" %}
+                {% endif %}
+
                 <span class="caret"></span>
               </span>
             <ul class="dropdown-menu" role="menu" aria-labelledby="assignmentTypeMenu">
               <li role="presentation">
                 <a role="menuitem" href="{% url "courses:performance:graded_content" course_id=course_id %}">
                   {# Translators: This refers to all course assignment types (e.g. homework, exam, lab). #}
-                  {% trans "All" %}
+                  {% trans "All Assignments" %}
                 </a>
               </li>
               {% for assignment_type in assignment_types %}
@@ -30,9 +35,6 @@
           </div>
         </li>
         {% if assignments %}
-          <li class="nav-section separator">
-            <i class="fa fa-caret-right"></i>
-          </li>
           <li class="{% if active == "assignments" %}active{% endif %} nav-section">
             <div class="dropdown">
               <span class="link-label dropdown-toggle" id="assignmentMenu" data-toggle="dropdown">
@@ -53,9 +55,6 @@
           </li>
         {% endif %}
         {% if problems %}
-          <li class="nav-section separator">
-            <i class="fa fa-caret-right"></i>
-          </li>
           <li class="{% if active == "problems" %}active{% endif %} nav-section">
             <div class="dropdown">
               <span class="link-label dropdown-toggle" id="problemMenu" data-toggle="dropdown">
