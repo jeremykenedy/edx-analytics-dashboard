@@ -20,6 +20,7 @@ from waffle import switch_is_active
 from analyticsclient.client import Client
 from analyticsclient.exceptions import NotFoundError, ClientError
 
+from analytics_dashboard.utils import sanitize_cache_key
 from common import BearerAuth
 from courses import permissions
 from courses.serializers import LazyEncoder
@@ -55,7 +56,7 @@ class CourseAPIMixin(object):
         return super(CourseAPIMixin, self).dispatch(request, *args, **kwargs)
 
     def _course_detail_cache_key(self, course_id):
-        return 'course_{}_details'.format(course_id)
+        return sanitize_cache_key('course_{}_details'.format(course_id))
 
     def get_course_info(self, course_id):
         """

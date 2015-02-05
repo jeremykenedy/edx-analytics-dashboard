@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from analyticsclient.exceptions import NotFoundError
 import slumber
 
+from analytics_dashboard.utils import sanitize_cache_key
 import common
 from courses.presenters import BasePresenter
 import courses.utils as utils
@@ -156,7 +157,7 @@ class CoursePerformancePresenter(BasePresenter):
         return answer_distributions
 
     def get_cache_key(self, name):
-        return '{}_{}'.format(self.course_id, name)
+        return sanitize_cache_key('{}_{}'.format(self.course_id, name))
 
     @property
     def last_updated(self):
