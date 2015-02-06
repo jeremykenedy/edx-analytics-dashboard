@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BOWER_COMPONENTS_PATH="analytics_dashboard/static/bower_components"
+BOWER_COMPONENTS_PATH="static/bower_components"
 
 function CSS2SCSS() {
     filename=$1

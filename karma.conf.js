@@ -15,24 +15,24 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            {pattern: 'analytics_dashboard/static/vendor/**/*.js', included: false},
-            {pattern: 'analytics_dashboard/static/bower_components/**/*.js', included: false},
-            {pattern: 'analytics_dashboard/static/bower_components/**/*.json', included: false},
-            {pattern: 'analytics_dashboard/static/js/models/**/*.js', included: false},
-            {pattern: 'analytics_dashboard/static/js/views/**/*.js', included: false},
-            {pattern: 'analytics_dashboard/static/js/utils/**/*.js', included: false},
-            {pattern: 'analytics_dashboard/static/js/test/specs/*.js', included: false},
-            'analytics_dashboard/static/js/config.js',
-            'analytics_dashboard/static/js/test/spec-runner.js'
+            {pattern: 'static/vendor/**/*.js', included: false},
+            {pattern: 'static/bower_components/**/*.js', included: false},
+            {pattern: 'static/bower_components/**/*.json', included: false},
+            {pattern: 'static/js/models/**/*.js', included: false},
+            {pattern: 'static/js/views/**/*.js', included: false},
+            {pattern: 'static/js/utils/**/*.js', included: false},
+            {pattern: 'static/js/test/specs/*.js', included: false},
+            'static/js/config.js',
+            'static/js/test/spec-runner.js'
         ],
 
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'analytics_dashboard/static/js/models/**/*.js': ['coverage'],
-            'analytics_dashboard/static/js/views/**/*.js': ['coverage'],
-            'analytics_dashboard/static/js/utils/**/*.js': ['coverage']
+            'static/js/models/**/*.js': ['coverage'],
+            'static/js/views/**/*.js': ['coverage'],
+            'static/js/utils/**/*.js': ['coverage']
         },
 
         // plugins required for running the karma tests

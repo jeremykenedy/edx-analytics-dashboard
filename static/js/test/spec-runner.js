@@ -40,7 +40,7 @@ if (isBrowser) {
         }
     }
     // This is where karma puts the files
-    config.baseUrl = '/base/analytics_dashboard/static/';
+    config.baseUrl = '/base/static/';
 
     // Karma lets you list the test files here
     config.deps = specs;

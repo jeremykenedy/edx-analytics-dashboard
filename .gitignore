@@ -39,10 +39,10 @@ Thumbs.db
 Desktop.ini
 
 .idea/
-analytics_dashboard/assets/
+assets/
 node_modules/
-analytics_dashboard/static/bower_components/
-analytics_dashboard/static/dist/
+static/bower_components/
+static/dist/
 .coverage
 nosetests.xml
 reports/

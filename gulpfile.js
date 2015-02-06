@@ -9,21 +9,21 @@
         jscs = require('gulp-jscs'),
         paths = {
             spec: [
-                'analytics_dashboard/static/js/**/*.js',
-                'analytics_dashboard/static/js/test/**/*.js'
+                'static/js/**/*.js',
+                'static/js/test/**/*.js'
             ],
             lint: [
                 'build.js',
                 'gulpfile.js',
-                'analytics_dashboard/static/js/**/*.js',
-                'analytics_dashboard/static/js/test/**/*.js'
+                'static/js/**/*.js',
+                'static/js/test/**/*.js'
             ],
             templates: [
-                'analytics_dashboard/analytics_dashboard/templates/analytics_dashboard/*.html',
-                'analytics_dashboard/courses/templates/courses/*.html',
-                'analytics_dashboard/templates/*.html'
+                'analytics_dashboard/templates/*.html',
+                'courses/templates/courses/*.html',
+                'templates/*.html'
             ],
-            sass: ['analytics_dashboard/static/sass/*.scss'],
+            sass: ['static/sass/*.scss'],
             karamaConf: 'karma.conf.js'
         };
 

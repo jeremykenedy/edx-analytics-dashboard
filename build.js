@@ -1,8 +1,8 @@
 /* jshint asi: true, expr:true */
 ({
-    mainConfigFile: 'analytics_dashboard/static/js/config.js',
-    baseUrl: 'analytics_dashboard/static',
-    dir: 'analytics_dashboard/static/dist',
+    mainConfigFile: 'static/js/config.js',
+    baseUrl: 'static',
+    dir: 'static/dist',
     removeCombined: true,
     findNestedDependencies: true,
 

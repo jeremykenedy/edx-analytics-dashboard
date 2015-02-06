@@ -17,7 +17,7 @@ SITE_NAME = basename(DJANGO_ROOT)
 
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
-path.append(DJANGO_ROOT)
+# path.append(DJANGO_ROOT)
 ########## END PATH CONFIGURATION
 
 
@@ -397,7 +397,7 @@ RJS_OPTIMIZATION_ENABLED = False
 
 
 ########## DOCS/HELP CONFIGURATION
-DOCS_ROOT = join(dirname(SITE_ROOT), 'docs')
+DOCS_ROOT = join(SITE_ROOT, 'docs')
 
 # Load the docs config into memory when the server starts
 with open(join(DOCS_ROOT, "config.ini")) as config_file:
