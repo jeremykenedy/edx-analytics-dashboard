@@ -4,6 +4,7 @@ import datetime
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from analyticsclient.exceptions import NotFoundError
 import slumber
@@ -238,6 +239,13 @@ class CoursePerformancePresenter(BasePresenter):
             for index, problem in enumerate(problems):
                 data = course_problems.get(problem['id'], DEFAULT_DATA)
                 data['index'] = index + 1
+                data['url'] = reverse('courses:performance:answer_distribution',
+                                      kwargs={
+                                          'course_id': self.course_id,
+                                          'assignment_id': assignment['id'],
+                                          'problem_id':problem['id'],
+                                          'problem_part_id': data['part_ids'][0]
+                                      })
                 problem.update(data)
 
             assignment['problems'] = problems
@@ -283,6 +291,8 @@ class CoursePerformancePresenter(BasePresenter):
                 assignment['correct_submissions'] = correct_submissions
                 assignment['incorrect_submissions'] = total_submissions - correct_submissions
                 assignment['index'] = index + 1
+                assignment['url'] = reverse('courses:performance:assignment',
+                                            kwargs={'course_id': self.course_id, 'assignment_id': assignment['id']})
 
             # Cache the data for the course-assignment_type combination.
             cache.set(assignment_type_key, assignments)

@@ -1,8 +1,8 @@
 /**
  * Abstract class for NVD3 bar charts (includes discrete bar and histogram).
  */
-define(['nvd3', 'underscore', 'utils/utils', 'views/chart-view'],
-    function (nvd3, _, Utils, ChartView) {
+define(['d3', 'nvd3', 'underscore', 'utils/utils', 'views/chart-view'],
+    function (d3, nvd3, _, Utils, ChartView) {
         'use strict';
 
         var BarView = ChartView.extend({
@@ -56,6 +56,15 @@ define(['nvd3', 'underscore', 'utils/utils', 'views/chart-view'],
 
                     return formattedLabel;
                 };
+            },
+
+            addChartClick: function() {
+                var self = this;
+                d3.selectAll('rect.nv-bar')
+                    .style('cursor', 'pointer')
+                    .on('click', function(d) {
+                        self.options.click(d);
+                    });
             },
 
             initChart: function(chart) {

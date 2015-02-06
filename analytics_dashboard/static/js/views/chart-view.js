@@ -46,7 +46,7 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                 // parse and format the data for nvd3
                 combinedTrends = _(trendOptions).map(function (trendOption) {
                     var values = _(data).map(function (datum) {
-                        var keyedValue = {},
+                        var keyedValue = _(datum).clone(),
                             yKey = trendOption.key || self.options.y.key;
                         keyedValue[self.options.y.key] = datum[yKey];
                         keyedValue[self.options.x.key] = datum[self.options.x.key];
@@ -88,7 +88,7 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                     canvas = d3.select(self.el),
                 // ex. translate(200, 200) or translate(200 200)
                     translateRegex = /translate\((\d+)[,\s]\s*(\d+)\)/g,
-                    xAxisMargin = this.options.xAxisMargin,
+                    xAxisMargin = self.options.xAxisMargin,
                     axisEl,
                     matches;
 
@@ -222,6 +222,14 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                     '</table>'
             ),
 
+            /**
+             * Implement this to enable users to click on chart elements.  This
+             * is called when render is complete and the click option is specified.
+             */
+            addChartClick: function (d) {   // jshint ignore:line
+                throw 'Not implemented';
+            },
+
             render: function () {
                 AttributeListenerView.prototype.render.call(this);
                 var self = this,
@@ -265,7 +273,11 @@ define(['d3', 'jquery', 'nvd3', 'underscore', 'utils/utils', 'views/attribute-li
                     self.styleChart();
                 });
 
-                return this;
+                if (_(self.options.click).isFunction()) {
+                    self.addChartClick();
+                }
+
+                return self;
             }
 
         });

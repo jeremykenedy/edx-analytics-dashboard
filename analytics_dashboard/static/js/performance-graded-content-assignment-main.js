@@ -39,7 +39,8 @@ require(['vendor/domReady!', 'load/init-page'], function (doc, page) {
                 y: {key: 'count'},
                 /* Translators: This string is used for a tooltip heading (e.g. Problem: What is 2+2?).
                  Do NOT translate the word "value". */
-                interactiveTooltipHeaderTemplate: _.template(gettext('Problem: <%=value%>'))
+                interactiveTooltipHeaderTemplate: _.template(gettext('Problem: <%=value%>')),
+                click: function (d) {document.location.href = d.url;}
             });
 
             tableColumns = [

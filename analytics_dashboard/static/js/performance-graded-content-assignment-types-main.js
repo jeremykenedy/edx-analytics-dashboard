@@ -38,7 +38,8 @@ require(['vendor/domReady!', 'load/init-page'], function (doc, page) {
                 trends: graphSubmissionColumns,
                 x: {key: 'id', displayKey: 'name'},
                 y: {key: 'count'},
-                interactiveTooltipHeaderTemplate: _.template(assignmentType + ': <%=value%>')
+                interactiveTooltipHeaderTemplate: _.template(assignmentType + ': <%=value%>'),
+                click: function (d) {document.location.href = d.url;}
             });
 
             tableColumns = [
