@@ -98,9 +98,9 @@ To download the Submissions report in a comma-separated value
 file, click **Download CSV**.
 
 The report and the file include one row for each problem-answer combination
-selected by your students. For example, consider a dropdown problem has five
-possible answers. The report or file contains up to five rows, one for each
-answer selected by at least one student.
+submitted by a student. For example, consider a dropdown problem that has
+five possible answers. The report or file contains up to five rows, one for
+each answer selected by at least one student.
 
 For problems that enable the randomization feature in Studio, there is one row
 for each problem-variant-answer combination selected by at least one student.

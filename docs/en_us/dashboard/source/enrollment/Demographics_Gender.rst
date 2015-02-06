@@ -46,7 +46,7 @@ Examples of this chart for two different courses follow.
 
 .. MITx/8.MReVx/2T2014/enrollment/demographics/gender/
 
-These charts are both for science courses, and those courses have the same
+Both of these charts are for science courses, and those courses have the same
 median age, 25. Each of these course teams might use information about the
 percentages of enrolled men and women as a starting point for an investigation
 into how students learn about their course offering and make the decision to
